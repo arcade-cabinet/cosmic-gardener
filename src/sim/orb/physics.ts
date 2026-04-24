@@ -19,6 +19,8 @@ export interface PinballStepOptions {
   delta: number;
   leftFlipper: boolean;
   rightFlipper: boolean;
+  gravityWells?: Array<{ x: number; y: number; radius: number }>;
+  repulsors?: Array<{ x: number; y: number; force: number }>;
 }
 
 export interface StarCollisionResult {
@@ -56,10 +58,41 @@ export function createPinballOrb(
 
 export function advancePinballOrb(
   orb: PinballOrb,
-  { delta, leftFlipper, rightFlipper }: PinballStepOptions
+  { delta, leftFlipper, rightFlipper, gravityWells = [], repulsors = [] }: PinballStepOptions
 ): { drained: boolean; orb: PinballOrb } {
-  let vx = orb.vx * FRICTION;
-  let vy = (orb.vy + GRAVITY * delta) * FRICTION;
+  let vx = orb.vx;
+  let vy = orb.vy;
+
+  // Apply void zone gravity pull
+  for (const well of gravityWells) {
+    const dx = well.x - orb.x;
+    const dy = well.y - orb.y;
+    const distSq = dx * dx + dy * dy;
+    const dist = Math.sqrt(distSq);
+    // Only attract if within a reasonable distance of the void zone
+    if (dist < well.radius * 2.5 && dist > 1) {
+      // Inverse-square-ish pull, capped.
+      const force = Math.min((well.radius * 0.05) / dist, 0.08);
+      vx += (dx / dist) * force * delta;
+      vy += (dy / dist) * force * delta;
+    }
+  }
+
+  // Apply repulsion from fully charged stars
+  for (const repulsor of repulsors) {
+    const dx = orb.x - repulsor.x;
+    const dy = orb.y - repulsor.y;
+    const distSq = dx * dx + dy * dy;
+    const dist = Math.sqrt(distSq);
+    if (dist < 15 && dist > 1) {
+      const force = Math.min(repulsor.force / dist, 0.05);
+      vx += (dx / dist) * force * delta;
+      vy += (dy / dist) * force * delta;
+    }
+  }
+
+  vx = vx * FRICTION;
+  vy = (vy + GRAVITY * delta) * FRICTION;
   let x = orb.x + vx * delta;
   let y = orb.y + vy * delta;
   // Allocate exactly one array of the final length instead of the

@@ -11,11 +11,12 @@ export type { PinballOrb } from "@/sim/orb";
 
 interface UsePinballPhysicsProps {
   stars: Map<string, { id: string; x: number; y: number; energy: number; growthStage: number }>;
+  voidZones?: Array<{ x: number; y: number; radius: number }>;
   onStarHit: (starId: string) => void;
   onDrain: () => void;
 }
 
-export function usePinballPhysics({ stars, onStarHit, onDrain }: UsePinballPhysicsProps) {
+export function usePinballPhysics({ stars, voidZones = [], onStarHit, onDrain }: UsePinballPhysicsProps) {
   const [orbs, setOrbs] = useState<Map<string, PinballOrb>>(new Map());
   const [leftFlipper, setLeftFlipper] = useState(false);
   const [rightFlipper, setRightFlipper] = useState(false);
@@ -29,6 +30,8 @@ export function usePinballPhysics({ stars, onStarHit, onDrain }: UsePinballPhysi
   // the animation frame each tick, producing tap-lag and GC churn.
   const starsRef = useRef(stars);
   starsRef.current = stars;
+  const voidZonesRef = useRef(voidZones);
+  voidZonesRef.current = voidZones;
   const leftFlipperRef = useRef(leftFlipper);
   leftFlipperRef.current = leftFlipper;
   const rightFlipperRef = useRef(rightFlipper);
@@ -75,10 +78,19 @@ export function usePinballPhysics({ stars, onStarHit, onDrain }: UsePinballPhysi
           next.forEach((orb, id) => {
             if (!orb.active) return;
 
+            const repulsors: Array<{ x: number; y: number; force: number }> = [];
+            starsRef.current.forEach((star) => {
+              if (star.growthStage === 3) {
+                repulsors.push({ x: star.x, y: star.y, force: 0.8 });
+              }
+            });
+
             const step = advancePinballOrb(orb, {
               delta,
               leftFlipper: leftFlipperRef.current,
               rightFlipper: rightFlipperRef.current,
+              gravityWells: voidZonesRef.current,
+              repulsors,
             });
             let nextOrb = step.orb;
 
