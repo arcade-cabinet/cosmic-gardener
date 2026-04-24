@@ -12,7 +12,7 @@ export interface PinballOrb {
   vy: number;
   radius: number;
   active: boolean;
-  trail: Array<{ x: number; y: number; age: number }>;
+  trail: Array<{ x: number; y: number }>;
 }
 
 export interface PinballStepOptions {
@@ -62,9 +62,20 @@ export function advancePinballOrb(
   let vy = (orb.vy + GRAVITY * delta) * FRICTION;
   let x = orb.x + vx * delta;
   let y = orb.y + vy * delta;
-  const trail = [...orb.trail, { age: 0, x, y }]
-    .slice(-MAX_TRAIL_LENGTH)
-    .map((point) => ({ ...point, age: point.age + 1 }));
+  // Allocate exactly one array of the final length instead of the
+  // old spread→slice→map chain, which built three intermediate arrays
+  // per orb per frame. The trail itself must stay immutable (React
+  // reads it as state), but a single allocation is the floor.
+  const prevTrail = orb.trail;
+  const prevLen = prevTrail.length;
+  const willGrow = prevLen < MAX_TRAIL_LENGTH;
+  const nextLen = willGrow ? prevLen + 1 : MAX_TRAIL_LENGTH;
+  const trail = new Array<{ x: number; y: number }>(nextLen);
+  const startIdx = willGrow ? 0 : 1;
+  for (let i = 0; i < nextLen - 1; i += 1) {
+    trail[i] = prevTrail[i + startIdx];
+  }
+  trail[nextLen - 1] = { x, y };
 
   if (x < 3) {
     x = 3;

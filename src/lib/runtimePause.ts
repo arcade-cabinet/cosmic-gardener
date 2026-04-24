@@ -7,7 +7,7 @@
  * subscribing to a context.
  */
 
-const PAUSE_EVENT = "bioluminescent-sea:pause-change";
+const PAUSE_EVENT = "cosmic-gardener:pause-change";
 
 export interface PauseChangeDetail {
   paused: boolean;
