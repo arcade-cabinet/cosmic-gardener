@@ -22,6 +22,7 @@ const STAGE_RADIUS = [4.5, 6.5, 9, 11];
 const STAGE_OUTER = [16, 22, 32, 44];
 
 export function StarSeed({
+  id,
   x,
   y,
   energy,
@@ -42,6 +43,9 @@ export function StarSeed({
 
   return (
     <motion.div
+      data-testid="star-seed"
+      data-star-id={id}
+      data-growth-stage={stage}
       className={cn(
         "absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer",
         isSelected && "z-50",

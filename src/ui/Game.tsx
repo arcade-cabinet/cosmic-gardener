@@ -1185,7 +1185,7 @@ export default function Game({ className }: { className?: string }) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Launch the orb
+                Begin
               </motion.button>
             </motion.div>
           </motion.div>
