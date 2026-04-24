@@ -22,7 +22,6 @@ import {
   type VoidZone as VoidZoneType,
 } from "@/sim/constellation";
 import {
-  getCosmicModeTuning,
   resolveCosmicDrainRecovery,
   tuneVoidZonesForMode,
 } from "@/sim/session";
