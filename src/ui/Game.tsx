@@ -74,8 +74,7 @@ type GameState =
   | "zenMode";
 
 interface CosmicRunSnapshot {
-  ballsRemaining: number;
-  comboMultiplier: number;
+    comboMultiplier: number;
   completedConnections: string[];
   completedPoints: string[];
   constellationsCompleted: number;
@@ -98,8 +97,7 @@ function isCosmicSnapshot(snapshot: unknown): snapshot is CosmicRunSnapshot {
       typeof value === "object" &&
       typeof value.level === "number" &&
       typeof value.score === "number" &&
-      typeof value.ballsRemaining === "number" &&
-      typeof value.comboMultiplier === "number" &&
+            typeof value.comboMultiplier === "number" &&
       Array.isArray(value.completedPoints) &&
       Array.isArray(value.completedConnections) &&
       Array.isArray(value.starPointMatches)
@@ -694,8 +692,7 @@ export default function Game({ className }: { className?: string }) {
       setCompletedConnections(new Set(snapshot.completedConnections));
       setStarPointMatches(new Map(snapshot.starPointMatches));
       setScore(snapshot.score);
-      setBallsRemaining(snapshot.ballsRemaining);
-      setComboMultiplier(snapshot.comboMultiplier);
+            setComboMultiplier(snapshot.comboMultiplier);
       setRecoveryBloomsUsed(snapshot.recoveryBloomsUsed ?? 0);
       setZenTransitionSeen(snapshot.zenTransitionSeen ?? snapshot.gameState === "zenMode");
       setGameState(
@@ -708,7 +705,6 @@ export default function Game({ className }: { className?: string }) {
       return;
     }
 
-    const tuning = getCosmicModeTuning(mode);
     setSessionMode(mode);
     setRunSeed(seed);
     resetGame();
@@ -718,8 +714,7 @@ export default function Game({ className }: { className?: string }) {
     setCompletedConnections(new Set());
     setStarPointMatches(new Map());
     setScore(0);
-    setBallsRemaining(tuning.startingBalls);
-    setComboMultiplier(1);
+        setComboMultiplier(1);
     setRecoveryBloomsUsed(0);
     setRecoveryBloom(null);
     setZenTransitionSeen(false);
@@ -731,8 +726,7 @@ export default function Game({ className }: { className?: string }) {
     key: "cosmic-gardener:v1:save",
     paused: !autosaveActive,
     build: () => ({
-      ballsRemaining,
-      comboMultiplier,
+            comboMultiplier,
       completedConnections: Array.from(completedConnections),
       completedPoints: Array.from(completedPoints),
       constellationsCompleted,
@@ -760,11 +754,9 @@ export default function Game({ className }: { className?: string }) {
     }
 
     const targetLevel = level + 1;
-    const tuning = getCosmicModeTuning(sessionMode);
     setLevel(targetLevel);
     loadLevel(targetLevel, runSeed);
-    setBallsRemaining((prev) => Math.min(prev + 1, tuning.maxBalls));
-    setGameState("playing");
+        setGameState("playing");
   };
 
   useEffect(() => {
