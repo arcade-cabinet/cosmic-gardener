@@ -10,15 +10,17 @@ import {
   type EnergyStream,
   MAX_COSMIC_COLD,
   type StarSeed,
+  type VoidZone,
 } from "@/sim/constellation";
 
 export type { EnergyStream, StarSeed } from "@/sim/constellation";
 
 interface UseEnergyRoutingProps {
+  voidZones?: VoidZone[];
   onEnergyDepleted?: () => void;
 }
 
-export function useEnergyRouting({ onEnergyDepleted }: UseEnergyRoutingProps = {}) {
+export function useEnergyRouting({ voidZones = [], onEnergyDepleted }: UseEnergyRoutingProps = {}) {
   const [stars, setStars] = useState<Map<string, StarSeed>>(new Map());
   const [streams, setStreams] = useState<Map<string, EnergyStream>>(new Map());
   const [totalEnergy, setTotalEnergy] = useState(COSMIC_ENERGY_CAPACITY);
@@ -116,16 +118,13 @@ export function useEnergyRouting({ onEnergyDepleted }: UseEnergyRoutingProps = {
     [totalEnergy]
   );
 
-  // Live refs to volatile values. `streams` and `stars` are state that
-  // changes every RAF tick; `onEnergyDepleted` is a closure from
-  // Game.tsx that churns on every render. Reading them through refs
-  // keeps the animation frame chain stable AND lets
-  // checkConstellationComplete stay zero-dep so callers can use it as
-  // a stable function reference.
+  // Live refs to volatile values.
   const starsRef = useRef(stars);
   starsRef.current = stars;
   const streamsRef = useRef(streams);
   streamsRef.current = streams;
+  const voidZonesRef = useRef(voidZones);
+  voidZonesRef.current = voidZones;
   const onEnergyDepletedRef = useRef(onEnergyDepleted);
   onEnergyDepletedRef.current = onEnergyDepleted;
 
@@ -166,15 +165,18 @@ export function useEnergyRouting({ onEnergyDepleted }: UseEnergyRoutingProps = {
       lastTimeRef.current = time;
 
       if (!isRuntimePaused()) {
+        const { nextStars, energyDrained } = advanceEnergyNetwork(starsRef.current, streamsRef.current, voidZonesRef.current, delta);
+        
         setCosmicCold((prev) => {
-          const newCold = prev + delta * 0.5;
+          // Add a tiny ambient cold + cold drained directly from stars
+          const newCold = prev + (delta * 0.5) + energyDrained;
           if (newCold >= MAX_COSMIC_COLD && onEnergyDepletedRef.current) {
             onEnergyDepletedRef.current();
           }
           return Math.min(newCold, MAX_COSMIC_COLD);
         });
 
-        setStars((prevStars) => advanceEnergyNetwork(prevStars, streamsRef.current, delta));
+        setStars(nextStars);
       }
 
       animationRef.current = requestAnimationFrame(animate);

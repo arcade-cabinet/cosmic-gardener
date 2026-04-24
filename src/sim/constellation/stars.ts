@@ -6,6 +6,8 @@
  * Advancing the network is a pure function of (stars, streams, dt).
  */
 
+import type { VoidZone } from "./patterns";
+
 export interface StarSeed {
   id: string;
   x: number;
@@ -75,10 +77,13 @@ export function createEnergyStream(fromId: string, toId: string): EnergyStream {
 export function advanceEnergyNetwork(
   stars: Map<string, StarSeed>,
   streams: Map<string, EnergyStream>,
+  voidZones: VoidZone[],
   deltaSeconds: number
-): Map<string, StarSeed> {
+): { nextStars: Map<string, StarSeed>; energyDrained: number } {
   const next = new Map(stars);
+  let energyDrained = 0;
 
+  // Process streams (energy flowing between stars)
   streams.forEach((stream) => {
     if (!stream.active) return;
 
@@ -105,5 +110,33 @@ export function advanceEnergyNetwork(
     });
   });
 
-  return next;
+  // Process void zones (draining energy from stars)
+  for (const zone of voidZones) {
+    next.forEach((star, id) => {
+      const dx = star.x - zone.x;
+      const dy = star.y - zone.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      // If a star is within the void zone's radius + a buffer, it gets drained
+      if (dist < zone.radius * 2.5) {
+        // Closer = faster drain. Cap the max drain rate.
+        const distanceFactor = Math.max(0.1, 1 - (dist / (zone.radius * 2.5)));
+        const rawDrain = zone.drainRate * distanceFactor * 15 * deltaSeconds;
+        
+        if (star.energy > 0) {
+          const actualDrain = Math.min(rawDrain, star.energy);
+          const newEnergy = Math.max(0, star.energy - actualDrain);
+          energyDrained += actualDrain;
+          
+          next.set(id, {
+            ...star,
+            energy: newEnergy,
+            growthStage: calculateGrowthStage(newEnergy, star.maxEnergy),
+          });
+        }
+      }
+    });
+  }
+
+  return { nextStars: next, energyDrained };
 }
