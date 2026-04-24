@@ -116,36 +116,47 @@ export function useEnergyRouting({ onEnergyDepleted }: UseEnergyRoutingProps = {
     [totalEnergy]
   );
 
+  // Live refs to volatile values. `streams` and `stars` are state that
+  // changes every RAF tick; `onEnergyDepleted` is a closure from
+  // Game.tsx that churns on every render. Reading them through refs
+  // keeps the animation frame chain stable AND lets
+  // checkConstellationComplete stay zero-dep so callers can use it as
+  // a stable function reference.
+  const starsRef = useRef(stars);
+  starsRef.current = stars;
+  const streamsRef = useRef(streams);
+  streamsRef.current = streams;
+  const onEnergyDepletedRef = useRef(onEnergyDepleted);
+  onEnergyDepletedRef.current = onEnergyDepleted;
+
   const checkConstellationComplete = useCallback(
     (requiredConnections: Array<{ from: string; to: string }>): boolean => {
-      const starsArray = Array.from(stars.values());
-      const fullyGrown = starsArray.filter((s) => s.growthStage === 3);
-
-      if (fullyGrown.length < requiredConnections.length + 1) return false;
+      const currentStars = starsRef.current;
+      const currentStreams = streamsRef.current;
+      let fullyGrownCount = 0;
+      for (const star of currentStars.values()) {
+        if (star.growthStage === 3) fullyGrownCount += 1;
+      }
+      if (fullyGrownCount < requiredConnections.length + 1) return false;
 
       for (const conn of requiredConnections) {
-        const hasConnection = Array.from(streams.values()).some(
-          (s) =>
-            (s.fromId === conn.from && s.toId === conn.to) ||
-            (s.fromId === conn.to && s.toId === conn.from)
-        );
+        let hasConnection = false;
+        for (const stream of currentStreams.values()) {
+          if (
+            (stream.fromId === conn.from && stream.toId === conn.to) ||
+            (stream.fromId === conn.to && stream.toId === conn.from)
+          ) {
+            hasConnection = true;
+            break;
+          }
+        }
         if (!hasConnection) return false;
       }
 
       return true;
     },
-    [stars, streams]
+    []
   );
-
-  // Live refs to volatile values so the RAF effect can mount once
-  // instead of rebinding on every tick. `streams` is state that
-  // changes when the player connects stars; `onEnergyDepleted` is a
-  // closure from Game.tsx that churns on every render. Reading them
-  // through refs keeps the animation frame chain stable.
-  const streamsRef = useRef(streams);
-  streamsRef.current = streams;
-  const onEnergyDepletedRef = useRef(onEnergyDepleted);
-  onEnergyDepletedRef.current = onEnergyDepleted;
 
   useEffect(() => {
     const animate = (time: number) => {

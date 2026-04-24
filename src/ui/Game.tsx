@@ -330,6 +330,7 @@ export default function Game({ className }: { className?: string }) {
   const starsSignature = Array.from(stars.values())
     .map((s) => `${s.id}:${s.x}:${s.y}:${s.growthStage}`)
     .join("|");
+  // biome-ignore lint/correctness/useExhaustiveDependencies: starsSignature is the intentional invalidation key — keying on `stars` directly would rebuild this memo every per-frame energy tick and dump physics back into a rebind loop. The signature already captures every shape-relevant field.
   const starsForPhysics = useMemo(
     () =>
       new Map(
@@ -344,7 +345,6 @@ export default function Game({ className }: { className?: string }) {
           },
         ])
       ),
-    // biome-ignore lint/correctness/useExhaustiveDependencies: signature captures the fields the physics hook cares about
     [starsSignature]
   );
 
@@ -402,7 +402,7 @@ export default function Game({ className }: { className?: string }) {
       setShowHitEffect({ x: star.x, y: star.y, points });
       trackTimeout(() => setShowHitEffect(null), 800);
     },
-    [stars, transferEnergy, lastHitTime, comboMultiplier]
+    [stars, transferEnergy, lastHitTime, comboMultiplier, trackTimeout]
   );
 
   const handleDrain = useCallback(() => {
@@ -430,7 +430,7 @@ export default function Game({ className }: { className?: string }) {
       return Math.max(0, newCount);
     });
     setComboMultiplier(1);
-  }, [completedConnections.size, cosmicCold, recoveryBloomsUsed, sessionMode]);
+  }, [completedConnections.size, cosmicCold, recoveryBloomsUsed, sessionMode, trackTimeout]);
 
   const {
     orbs,
@@ -462,6 +462,7 @@ export default function Game({ className }: { className?: string }) {
   // player's attention stays on keeping the orb alive. Manual
   // drag-to-connect still works for players who want direct
   // control.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fullyGrownSignature is the intentional causal signal — the effect only re-runs when a star crosses into (or out of) growthStage 3. Reading `stars` via starsRef inside the body keeps per-frame energy ticks from rebinding this effect.
   useEffect(() => {
     if (gameState !== "playing" && gameState !== "tutorial" && gameState !== "zenMode") return;
     if (!currentPattern) return;
@@ -509,11 +510,6 @@ export default function Game({ className }: { className?: string }) {
     }
   }, [
     gameState,
-    // fullyGrownSignature is the real causal signal — the effect
-    // should only re-run when a star crosses into (or out of)
-    // growthStage 3, or when the player completes a connection.
-    // Reading `stars` via starsRef inside the body keeps per-frame
-    // energy ticks from rebinding this effect.
     fullyGrownSignature,
     currentPattern,
     starPointMatches,
@@ -521,6 +517,7 @@ export default function Game({ className }: { className?: string }) {
     comboMultiplier,
     createStream,
     audio.playConstellationHum,
+    trackTimeout,
   ]);
 
   const loadLevel = useCallback(
@@ -680,6 +677,7 @@ export default function Game({ className }: { className?: string }) {
       completedConnections,
       comboMultiplier,
       audio.playConstellationHum,
+      trackTimeout,
     ]
   );
 
