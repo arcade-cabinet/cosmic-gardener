@@ -130,9 +130,11 @@ export function useEnergyRouting({ onEnergyDepleted }: UseEnergyRoutingProps = {
   onEnergyDepletedRef.current = onEnergyDepleted;
 
   const checkConstellationComplete = useCallback(
-    (requiredConnections: Array<{ from: string; to: string }>): boolean => {
-      const currentStars = starsRef.current;
-      const currentStreams = streamsRef.current;
+    (
+      requiredConnections: Array<{ from: string; to: string }>,
+      currentStars: Map<string, StarSeed>,
+      currentStreams: Map<string, EnergyStream>
+    ): boolean => {
       let fullyGrownCount = 0;
       for (const star of currentStars.values()) {
         if (star.growthStage === 3) fullyGrownCount += 1;
@@ -152,7 +154,6 @@ export function useEnergyRouting({ onEnergyDepleted }: UseEnergyRoutingProps = {
         }
         if (!hasConnection) return false;
       }
-
       return true;
     },
     []
