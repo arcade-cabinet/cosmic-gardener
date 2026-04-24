@@ -1,7 +1,7 @@
 ---
 title: State
 updated: 2026-04-24
-status: in-progress
+status: current
 domain: context
 ---
 
@@ -9,19 +9,13 @@ domain: context
 
 ## 2026-04-24 update
 
-Since the 2026-04-23 baseline:
+Since the 2026-04-23 baseline, the project has reached **1.0 feature completion**:
 
-- **PR #25** — onboarding copy matches unified one-game model
-- **PR #26** — pattern-progress HUD unifies pinball + constellation
-  (top-center `LYRA · 2/5 lit` chip + brighter ghost outline +
-  auto-connect on dual full-growth)
-- **PR #27** — memory-spike perf patches (RAF rebind storm fix,
-  canvas transform uses `setTransform`, auto-connect keyed on
-  signature, centralized timer cleanup)
-
-Net effect: the game now reads as ONE activity (hit the stars →
-fill the pattern) rather than two overlapping games. Pinball +
-constellation are visibly the same loop.
+- **World Generation (PR #34)** — The entire world (constellation sequence, void zones, star layouts) is now deterministically generated from an adjective-adjective-noun seed phrase (e.g. "Crystalline Bloomwise Orbit"). The new `SetupScreen` modal allows players to reroll or use a daily seed before starting.
+- **Test Parity** — Playwright headless E2E journey tests verify the setup, play, pause, and replay loops.
+- **Graphics & Polish** — Star seeds and the Pinball Orb now feature rich visual states and growth phases instead of primitive DOM elements.
+- **Audio Engine** — Tone.js ambient pad + SFX + constellation-hum.
+- **Mobile Polish** — Mobile-first flipper tap zones (lower 50%× 30% of viewport) ensure comfortable play on touch devices.
 
 For decisions and reasons, see
 [docs/agentic/decisions-log.md](agentic/decisions-log.md). For the
@@ -30,33 +24,15 @@ next agent's pickup list, see
 
 ## Current baseline
 
-Initial cut extracted from `jbcom/arcade-cabinet` on 2026-04-23.
-DOM-particle rendering is live: nebula background, cosmic dust,
-energy streams, void zones, star-seeds, pinball orb, flippers,
-constellation pattern overlay. HUD is identity-forward: level
-readout, constellation slot dots (top-left), pause button
-(top-right), Cosmic Energy + Cosmic Cold gauges (bottom on desktop /
-upper strip on mobile), pause overlay.
+DOM-particle rendering has been fully upgraded. The landing hero is a custom, performant 2D canvas animation of a pulsing nebula and drifting starfield. The HUD is identity-forward: level readout, constellation slot dots (top-left), pause button (top-right), Cosmic Energy + Cosmic Cold gauges, pause overlay, and pattern completion chip.
 
-- Node + dom tests: 21 passing across 5 engine files.
-- Typecheck clean, build clean at ~365 KB JS + ~34 KB CSS + font
-  files.
-- Headless Chromium verified at 1280×800 and 390×844 portrait:
-  landing → playing → HUD updates → zero console errors.
+- Node + dom tests + Playwright E2E passing.
+- Typecheck clean, build clean at ~365 KB JS + ~34 KB CSS + font files.
+- Headless Playwright verified at desktop (1280x720), tablet (834x1194), and mobile (390x844).
 
 ## Remaining before 1.0
 
-| Area               | Status          | Next step                                                             |
-| ------------------ | --------------- | --------------------------------------------------------------------- |
-| Audio              | not started     | Low ambient drone + per-seed awakening chime (Web Audio API)          |
-| Icons              | placeholder     | Generate mint-constellation SVG favicon + Android icon pack           |
-| Landing hero       | placeholder     | Commission / generate hero art for the title card                     |
-| E2E test           | not started     | Playwright journey spec (landing → 5s play → awaken → menu)           |
-| Android APK        | not verified    | `pnpm cap:sync && ./gradlew assembleDebug` in CI                      |
-| GitHub Pages       | not deployed    | First release-please tag will trigger it                              |
-| Portrait lock      | not locked      | Optional; add to capacitor.config for mobile-first feel               |
-| Daily constellation| not in engine   | Add `?seed=<YYYYMMDD>` query-param for shared sky                     |
-| "Rest" finale      | stub            | Replace "Play Again" CTA with "Continue the night" + quieted playfield |
+All 1.0 goals have been met. The game is fully polished, playable, and automatically deployed to GitHub Pages.
 
 ## Known bugs / quirks
 
@@ -65,6 +41,9 @@ with a date.
 
 ## Decisions log
 
+- 2026-04-24: Wired all procedural generation (constellations, void zones) to `seedrandom` and the codename generator to create shareable, deterministic "sectors". Added a `setup` game state to handle seed configuration.
+- 2026-04-24: Replaced Playwright HTML reporter with standard Github/List reporter to prevent headless test blocking in automated flows.
+- 2026-04-24: Refactored `checkConstellationComplete` to be a pure function to eliminate RAF-related closure rebinding storms and memory leaks.
 - 2026-04-23: Kept the legacy DOM-particle playfield components
   instead of rewriting to canvas. They already encode the identity
   (glow, motion, framer-motion springs) and rewriting would cost
