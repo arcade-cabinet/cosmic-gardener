@@ -10,9 +10,16 @@ interface StarSeedProps {
   growthStage: number;
   isSelected?: boolean;
   onClick?: () => void;
-  onDragStart?: () => void;
-  onDragEnd?: (position: { x: number; y: number }) => void;
 }
+
+// Palette pulled from src/theme/global.css. Stage progression reads
+// as: violet pocket (seed) → amber starlet (sprout) → mint-glowing
+// star (alive) → corona-haloed star (awakened).
+const STAGE_CORE = ["#5b3aa3", "#f2c14e", "#94f1b3", "#ffffff"];
+const STAGE_GLOW = ["#2a1247", "#f2c14e", "#94f1b3", "#94f1b3"];
+const STAGE_RIM = ["#9788a8", "#f2c14e", "#94f1b3", "#ffffff"];
+const STAGE_RADIUS = [4.5, 6.5, 9, 11];
+const STAGE_OUTER = [16, 22, 32, 44];
 
 export function StarSeed({
   x,
@@ -24,155 +31,154 @@ export function StarSeed({
   onClick,
 }: StarSeedProps) {
   const energyPercent = energy / maxEnergy;
-
-  const sizes = [12, 18, 26, 36];
-  const size = sizes[growthStage];
-
-  const colors = {
-    core: ["#fef3c7", "#fcd34d", "#f59e0b", "#ffffff"],
-    glow: [
-      "rgba(254, 243, 199, 0.3)",
-      "rgba(252, 211, 77, 0.4)",
-      "rgba(245, 158, 11, 0.5)",
-      "rgba(255, 255, 255, 0.6)",
-    ],
-    outer: [
-      "rgba(139, 92, 246, 0.2)",
-      "rgba(168, 85, 247, 0.3)",
-      "rgba(236, 72, 153, 0.4)",
-      "rgba(255, 215, 180, 0.5)",
-    ],
-  };
+  const stage = Math.min(Math.max(growthStage, 0), 3);
+  const r = STAGE_RADIUS[stage];
+  const outer = STAGE_OUTER[stage];
+  const core = STAGE_CORE[stage];
+  const glow = STAGE_GLOW[stage];
+  const rim = STAGE_RIM[stage];
+  const isAlive = stage >= 2;
+  const isAwakened = stage === 3;
 
   return (
     <motion.div
       className={cn(
-        "absolute cursor-pointer transform -translate-x-1/2 -translate-y-1/2",
-        "transition-transform duration-200",
-        isSelected && "z-50"
+        "absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer",
+        isSelected && "z-50",
       )}
       style={{ left: `${x}%`, top: `${y}%` }}
       initial={{ scale: 0, opacity: 0 }}
-      animate={{
-        scale: 1,
-        opacity: 1,
-      }}
+      animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0, opacity: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      transition={{ type: "spring", stiffness: 280, damping: 22 }}
       onClick={onClick}
-      whileHover={{ scale: 1.1 }}
+      whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.95 }}
     >
+      {/* Halo — soft outer bloom that pulses when alive */}
       <motion.div
-        className="absolute rounded-full"
+        aria-hidden="true"
+        className="pointer-events-none absolute rounded-full"
         style={{
-          width: size * 4,
-          height: size * 4,
-          left: -size * 1.5,
-          top: -size * 1.5,
-          background: `radial-gradient(circle, ${colors.outer[growthStage]} 0%, transparent 70%)`,
+          width: outer,
+          height: outer,
+          left: -outer / 2,
+          top: -outer / 2,
+          background: `radial-gradient(circle, ${glow}55 0%, ${glow}11 45%, transparent 75%)`,
+          filter: isAwakened ? "blur(0.3px)" : undefined,
         }}
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.5, 0.8, 0.5],
-        }}
-        transition={{
-          duration: 2 + growthStage * 0.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={
+          isAlive
+            ? { scale: [1, 1.18, 1], opacity: [0.55, 0.85, 0.55] }
+            : { opacity: 0.45 }
+        }
+        transition={{ duration: 2.4 - stage * 0.4, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <motion.div
-        className="absolute rounded-full"
-        style={{
-          width: size * 2.5,
-          height: size * 2.5,
-          left: -size * 0.75,
-          top: -size * 0.75,
-          background: `radial-gradient(circle, ${colors.glow[growthStage]} 0%, transparent 70%)`,
-        }}
-        animate={{
-          scale: [1, 1.15, 1],
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+      {/* Stage 0 — pure seed pocket: a quiet violet dot, no rays */}
+      {stage === 0 && (
+        <div
+          className="rounded-full"
+          style={{
+            width: r * 2,
+            height: r * 2,
+            background: `radial-gradient(circle at 32% 30%, ${core} 0%, ${rim} 70%, transparent 100%)`,
+            border: `1px solid ${rim}66`,
+            transform: "translate(-50%, -50%)",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
+      )}
 
-      <motion.div
-        className="rounded-full relative"
-        style={{
-          width: size,
-          height: size,
-          background: `radial-gradient(circle at 30% 30%, ${colors.core[growthStage]} 0%, ${colors.core[Math.max(0, growthStage - 1)]} 50%, transparent 100%)`,
-          boxShadow: `0 0 ${size / 2}px ${colors.core[growthStage]}, 0 0 ${size}px ${colors.glow[growthStage]}`,
-        }}
-        animate={{
-          boxShadow: [
-            `0 0 ${size / 2}px ${colors.core[growthStage]}, 0 0 ${size}px ${colors.glow[growthStage]}`,
-            `0 0 ${size}px ${colors.core[growthStage]}, 0 0 ${size * 1.5}px ${colors.glow[growthStage]}`,
-            `0 0 ${size / 2}px ${colors.core[growthStage]}, 0 0 ${size}px ${colors.glow[growthStage]}`,
-          ],
-        }}
-        transition={{
-          duration: 1 + growthStage * 0.3,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+      {/* Stages 1+ — SVG star glyph. 4-point at stage 1, 8-point + halo at stage 3. */}
+      {stage >= 1 && (
+        <svg
+          aria-hidden="true"
+          width={r * 4}
+          height={r * 4}
+          viewBox="-10 -10 20 20"
+          className="absolute pointer-events-none"
+          style={{ left: -r * 2, top: -r * 2 }}
+        >
+          {isAwakened && (
+            <g opacity="0.85">
+              {[0, 45, 90, 135].map((angle) => (
+                <line
+                  key={angle}
+                  x1="0"
+                  y1="-9"
+                  x2="0"
+                  y2="9"
+                  stroke={glow}
+                  strokeWidth="0.4"
+                  strokeLinecap="round"
+                  transform={`rotate(${angle})`}
+                  opacity="0.6"
+                />
+              ))}
+            </g>
+          )}
+          {/* Cardinal star */}
+          <path
+            d="M 0 -7 L 1.6 -1.4 L 7 0 L 1.6 1.4 L 0 7 L -1.6 1.4 L -7 0 L -1.6 -1.4 Z"
+            fill={core}
+            stroke={rim}
+            strokeWidth="0.3"
+            style={{
+              filter: isAlive
+                ? `drop-shadow(0 0 ${r * 0.8}px ${glow})`
+                : `drop-shadow(0 0 ${r * 0.3}px ${glow})`,
+            }}
+          />
+          {/* Inner highlight — gives the star dimensionality */}
+          <circle cx="-1.4" cy="-1.4" r="1.6" fill="#ffffff" opacity={isAwakened ? 0.85 : 0.6} />
+        </svg>
+      )}
 
       <AnimatePresence>
         {isSelected && (
           <motion.div
-            className="absolute rounded-full border-2 border-white/50"
+            aria-hidden="true"
+            className="pointer-events-none absolute rounded-full border"
             style={{
-              width: size * 2,
-              height: size * 2,
-              left: -size / 2,
-              top: -size / 2,
+              width: outer * 0.85,
+              height: outer * 0.85,
+              left: -outer * 0.425,
+              top: -outer * 0.425,
+              borderColor: "var(--color-fg)",
+              borderWidth: 1.5,
+              opacity: 0.6,
             }}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 0.6 }}
+            exit={{ scale: 0.7, opacity: 0 }}
           />
         )}
       </AnimatePresence>
 
-      <div
-        className="absolute left-1/2 transform -translate-x-1/2 h-1 rounded-full bg-white/20 overflow-hidden"
-        style={{
-          width: size * 2,
-          top: size + 8,
-        }}
-      >
-        <motion.div
-          className="h-full rounded-full"
+      {/* Energy meter — only shown until the star is fully grown.
+          Awakened stars have no meter; the glyph itself is the meter. */}
+      {!isAwakened && (
+        <div
+          className="pointer-events-none absolute h-[3px] -translate-x-1/2 overflow-hidden rounded-full"
           style={{
-            background: "linear-gradient(90deg, #fcd34d, #f59e0b, #ec4899)",
+            width: outer * 0.6,
+            top: r + 6,
+            left: 0,
+            background: "rgba(231, 220, 245, 0.18)",
           }}
-          initial={{ width: 0 }}
-          animate={{ width: `${energyPercent * 100}%` }}
-          transition={{ duration: 0.3 }}
-        />
-      </div>
-
-      <div
-        className="absolute flex gap-0.5"
-        style={{ top: size + 14, left: "50%", transform: "translateX(-50%)" }}
-      >
-        {[0, 1, 2, 3].map((stage) => (
-          <div
-            key={stage}
-            className={cn(
-              "w-1.5 h-1.5 rounded-full transition-colors duration-300",
-              stage <= growthStage ? "bg-amber-400" : "bg-white/20"
-            )}
+        >
+          <motion.div
+            className="h-full rounded-full"
+            style={{ background: `linear-gradient(90deg, var(--color-amber), var(--color-glow))` }}
+            initial={{ width: 0 }}
+            animate={{ width: `${energyPercent * 100}%` }}
+            transition={{ duration: 0.25 }}
           />
-        ))}
-      </div>
+        </div>
+      )}
     </motion.div>
   );
 }
