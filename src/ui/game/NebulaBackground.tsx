@@ -25,7 +25,10 @@ export function NebulaBackground({ className }: NebulaBackgroundProps) {
       height = canvas.offsetHeight;
       canvas.width = width * dpr;
       canvas.height = height * dpr;
-      ctx.scale(dpr, dpr);
+      // Absolute-set the transform — ctx.scale() would multiply on
+      // every resize and compound to dpr^N, eventually rendering
+      // massive offscreen geometry that pegs the GPU.
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     resizeCanvas();

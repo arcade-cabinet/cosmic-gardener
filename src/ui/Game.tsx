@@ -31,7 +31,7 @@ import { usePinballPhysics } from "@/hooks/usePinballPhysics";
 import { useAudio } from "@/audio/useAudio";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BallLauncher } from "./game/BallLauncher";
 import { ConstellationPattern } from "./game/ConstellationPattern";
 import { CosmicDust } from "./game/CosmicDust";
@@ -318,12 +318,71 @@ export default function Game({ className }: { className?: string }) {
     onEnergyDepleted: handleEnergyDepleted,
   });
 
-  const starsForPhysics = new Map(
-    Array.from(stars.entries()).map(([id, star]) => [
-      id,
-      { id: star.id, x: star.x, y: star.y, energy: star.energy, growthStage: star.growthStage },
-    ])
+  // Memoized projection of stars into the shape the physics hook
+  // needs. Without useMemo this Map was a new reference on every
+  // render, dumping the physics RAF effect into a rebind loop.
+  // Keyed on a compact signature so the identity only changes when
+  // something actually relevant to physics (position / growthStage)
+  // shifts, not on every per-frame energy tick (`energy` is still
+  // included because the renderer reads it, but the physics loop
+  // now reads stars via a ref so the identity churn doesn't propagate
+  // into the RAF).
+  const starsSignature = Array.from(stars.values())
+    .map((s) => `${s.id}:${s.x}:${s.y}:${s.growthStage}`)
+    .join("|");
+  const starsForPhysics = useMemo(
+    () =>
+      new Map(
+        Array.from(stars.entries()).map(([id, star]) => [
+          id,
+          {
+            id: star.id,
+            x: star.x,
+            y: star.y,
+            energy: star.energy,
+            growthStage: star.growthStage,
+          },
+        ])
+      ),
+    // biome-ignore lint/correctness/useExhaustiveDependencies: signature captures the fields the physics hook cares about
+    [starsSignature]
   );
+
+  // Signature of fully-grown star ids used by the auto-connect
+  // effect below. A stable string means the effect only re-runs
+  // when a star crosses into (or out of) growthStage 3 — not on
+  // every frame's energy tick.
+  const fullyGrownSignature = Array.from(stars.values())
+    .filter((s) => s.growthStage >= 3)
+    .map((s) => s.id)
+    .sort()
+    .join("|");
+
+  // Live ref mirror of the stars Map so effects can read current
+  // values without subscribing to per-frame identity changes.
+  const starsRef = useRef(stars);
+  starsRef.current = stars;
+
+  // Timer bookkeeping — any setTimeout that updates state after a
+  // delay (bloom fade, hit-effect clear, recovery-bloom dismissal,
+  // drain-pulse reset) goes in here so we can cancel them all on
+  // unmount. Without this, rapid gameplay leaks dozens of pending
+  // setState calls into a stale React tree.
+  const pendingTimersRef = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    return () => {
+      for (const id of pendingTimersRef.current) window.clearTimeout(id);
+      pendingTimersRef.current.clear();
+    };
+  }, []);
+  const trackTimeout = useCallback((fn: () => void, ms: number): number => {
+    const id = window.setTimeout(() => {
+      pendingTimersRef.current.delete(id);
+      fn();
+    }, ms);
+    pendingTimersRef.current.add(id);
+    return id;
+  }, []);
 
   const handleStarHit = useCallback(
     (starId: string) => {
@@ -341,7 +400,7 @@ export default function Game({ className }: { className?: string }) {
       setScore((prev) => prev + points);
 
       setShowHitEffect({ x: star.x, y: star.y, points });
-      setTimeout(() => setShowHitEffect(null), 800);
+      trackTimeout(() => setShowHitEffect(null), 800);
     },
     [stars, transferEnergy, lastHitTime, comboMultiplier]
   );
@@ -360,7 +419,7 @@ export default function Game({ className }: { className?: string }) {
         setRecoveryBloomsUsed(recovery.recoveryBloomsUsed);
         setScore((score) => score + recovery.scoreBonus);
         setRecoveryBloom({ message: recovery.message, points: recovery.scoreBonus });
-        setTimeout(() => setRecoveryBloom(null), 1400);
+        trackTimeout(() => setRecoveryBloom(null), 1400);
         return recovery.ballsRemaining;
       }
 
@@ -426,8 +485,8 @@ export default function Game({ className }: { className?: string }) {
       const fromStarId = starByPoint.get(edge.from);
       const toStarId = starByPoint.get(edge.to);
       if (!fromStarId || !toStarId) continue;
-      const fromStar = stars.get(fromStarId);
-      const toStar = stars.get(toStarId);
+      const fromStar = starsRef.current.get(fromStarId);
+      const toStar = starsRef.current.get(toStarId);
       if (!fromStar || !toStar) continue;
 
       // Both endpoints must be at full growth for the constellation
@@ -440,14 +499,22 @@ export default function Game({ className }: { className?: string }) {
       setCompletedConnections((prev) => new Set([...prev, connectionKey]));
       setScore((prev) => prev + points);
       setResonanceBloom({ connectionCount: nextConnectionCount, points });
-      setTimeout(() => setResonanceBloom(null), 1200);
+      // Tracked timer so it's cancelled on unmount — rapid
+      // auto-connects previously leaked dozens of pending state
+      // mutations into stale React trees.
+      trackTimeout(() => setResonanceBloom(null), 1200);
       audio.playConstellationHum();
       break; // Award one connection per render pass so the bloom
               // animations stagger instead of all firing at once.
     }
   }, [
     gameState,
-    stars,
+    // fullyGrownSignature is the real causal signal — the effect
+    // should only re-run when a star crosses into (or out of)
+    // growthStage 3, or when the player completes a connection.
+    // Reading `stars` via starsRef inside the body keeps per-frame
+    // energy ticks from rebinding this effect.
+    fullyGrownSignature,
     currentPattern,
     starPointMatches,
     completedConnections,
@@ -593,7 +660,7 @@ export default function Game({ className }: { className?: string }) {
           setCompletedConnections((prev) => new Set([...prev, connectionKey]));
           setScore((prev) => prev + points);
           setResonanceBloom({ connectionCount: nextConnectionCount, points });
-          setTimeout(() => setResonanceBloom(null), 1200);
+          trackTimeout(() => setResonanceBloom(null), 1200);
           audio.playConstellationHum();
         }
       }

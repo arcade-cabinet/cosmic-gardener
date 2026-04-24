@@ -57,12 +57,20 @@ export function CosmicDust({ particleCount = 200, className }: CosmicDustProps) 
       const height = canvas.offsetHeight;
       canvas.width = width * dpr;
       canvas.height = height * dpr;
-      ctx.scale(dpr, dpr);
+      // setTransform replaces the matrix absolutely; ctx.scale would
+      // multiply on every resize, compounding to dpr^N across several
+      // viewport changes and eventually rendering massive offscreen
+      // geometry that pegs the GPU.
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       dimensionsRef.current = { width, height };
 
-      particlesRef.current = Array.from({ length: particleCount }, (_, index) =>
-        createParticle(index, width, height)
-      );
+      // Only rebuild the particle array on first init or if the count
+      // actually changed — resize alone doesn't need fresh particles.
+      if (particlesRef.current.length !== particleCount) {
+        particlesRef.current = Array.from({ length: particleCount }, (_, index) =>
+          createParticle(index, width, height)
+        );
+      }
     };
 
     resizeCanvas();
