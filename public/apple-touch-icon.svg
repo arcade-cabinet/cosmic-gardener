@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <title>Cosmic Gardener</title>
+  <!-- iOS masks to its own radius, so fill the whole viewport. -->
+  <rect width="180" height="180" fill="#120530" />
+
+  <!-- Nebula glow -->
+  <circle cx="90" cy="90" r="68" fill="#2a1247" opacity="0.7" />
+  <circle cx="90" cy="90" r="48" fill="#94f1b3" opacity="0.12" />
+
+  <!-- Orb -->
+  <circle cx="90" cy="90" r="26" fill="#d9f2ec" opacity="0.95" />
+  <circle cx="84" cy="84" r="26" fill="#94f1b3" opacity="0.5" />
+
+  <!-- Constellation ring — 5 amber stars -->
+  <circle cx="90" cy="32" r="5" fill="#f2c14e" />
+  <circle cx="143" cy="70" r="4.5" fill="#f2c14e" />
+  <circle cx="124" cy="134" r="5" fill="#f2c14e" />
+  <circle cx="56" cy="134" r="4.5" fill="#f2c14e" />
+  <circle cx="37" cy="70" r="5" fill="#f2c14e" />
+
+  <path
+    d="M 90 32 L 143 70 L 124 134 L 56 134 L 37 70 Z"
+    fill="none"
+    stroke="#f2c14e"
+    stroke-width="1.6"
+    opacity="0.35"
+  />
+</svg>

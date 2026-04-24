@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Cosmic Gardener</title>
+  <!-- Deep-space backdrop disk -->
+  <rect width="64" height="64" fill="#050115" />
+  <circle cx="32" cy="32" r="30" fill="#120530" />
+
+  <!-- Nebula glow behind the orb -->
+  <circle cx="32" cy="32" r="20" fill="#2a1247" opacity="0.7" />
+  <circle cx="32" cy="32" r="14" fill="#94f1b3" opacity="0.12" />
+
+  <!-- Central orb — player's avatar in miniature -->
+  <circle cx="32" cy="32" r="8" fill="#d9f2ec" opacity="0.95" />
+  <circle cx="30" cy="30" r="8" fill="#94f1b3" opacity="0.5" />
+
+  <!-- Constellation ring — 5 amber star-points on an orbit -->
+  <circle cx="32" cy="14" r="1.7" fill="#f2c14e" />
+  <circle cx="49" cy="26" r="1.5" fill="#f2c14e" />
+  <circle cx="43" cy="47" r="1.7" fill="#f2c14e" />
+  <circle cx="21" cy="47" r="1.5" fill="#f2c14e" />
+  <circle cx="15" cy="26" r="1.7" fill="#f2c14e" />
+
+  <!-- Subtle connecting lines between the stars -->
+  <path
+    d="M 32 14 L 49 26 L 43 47 L 21 47 L 15 26 Z"
+    fill="none"
+    stroke="#f2c14e"
+    stroke-width="0.6"
+    opacity="0.35"
+  />
+</svg>
