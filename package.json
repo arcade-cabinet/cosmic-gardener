@@ -1,7 +1,7 @@
 {
   "name": "cosmic-gardener",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Zen cosmic-pattern gardener — tend living constellations, escalate into patterns that hum, finish not in victory but in rest.",
   "type": "module",
   "packageManager": "pnpm@10.33.0",
