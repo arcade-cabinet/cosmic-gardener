@@ -901,6 +901,9 @@ export default function Game({ className }: { className?: string }) {
             totalConstellations={CONSTELLATIONS.length}
             isPaused={gameState === "paused"}
             lowerBoardLayout={lowerBoardLayout}
+            patternName={currentPattern.name}
+            patternEdgesLit={completedConnections.size}
+            patternEdgesTotal={currentPattern.connections.length}
             onPause={() => setGameState("paused")}
             onResume={() => setGameState("playing")}
             onRestart={() => startGame()}
@@ -924,12 +927,11 @@ export default function Game({ className }: { className?: string }) {
                 x{comboMultiplier.toFixed(1)} COMBO
               </motion.div>
             )}
-            <div className="mt-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-cyan-100/70">
-              Links {completedConnections.size}/{currentPattern.connections.length}
-            </div>
-            <div className="mt-1 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-amber-200/70">
-              Recovery blooms {recoveryBloomsUsed}
-            </div>
+            {recoveryBloomsUsed > 0 && (
+              <div className="mt-1 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-amber-200/70">
+                Recovery blooms {recoveryBloomsUsed}
+              </div>
+            )}
           </motion.div>
 
           <AnimatePresence>
