@@ -10,6 +10,9 @@ interface GameUIProps {
   totalConstellations: number;
   isPaused: boolean;
   lowerBoardLayout: CosmicLowerBoardLayout;
+  patternName: string;
+  patternEdgesLit: number;
+  patternEdgesTotal: number;
   onPause: () => void;
   onResume: () => void;
   onRestart: () => void;
@@ -60,10 +63,15 @@ export function GameUI({
   totalConstellations,
   isPaused,
   lowerBoardLayout,
+  patternName,
+  patternEdgesLit,
+  patternEdgesTotal,
   onPause,
   onResume,
   onRestart,
 }: GameUIProps) {
+  const patternProgress =
+    patternEdgesTotal === 0 ? 0 : (patternEdgesLit / patternEdgesTotal) * 100;
   const constellationSlots = Array.from({ length: totalConstellations }, (_, index) => index);
   const energyPercent = Math.min(100, Math.max(0, (totalEnergy / 500) * 100));
   const warmthPercent = Math.max(0, 100 - cosmicCold);
@@ -128,119 +136,160 @@ export function GameUI({
         </motion.button>
       </div>
 
-      {useCompactStrip ? (
-        <motion.div
-          style={{
-            position: "absolute",
-            left: "1rem",
-            right: "5rem",
-            top: "5.85rem",
-            zIndex: 50,
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "0.5rem",
-            padding: "0.55rem 0.7rem",
-            borderRadius: "14px",
-            border: "1px solid rgba(148, 241, 179, 0.12)",
-            background: "rgba(8, 2, 26, 0.55)",
-            backdropFilter: "blur(10px)",
-            pointerEvents: "none",
-            boxShadow: "0 12px 28px rgba(0, 0, 0, 0.35)",
-          }}
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-        >
-          <CompactGauge
-            label="Energy"
-            value={Math.floor(totalEnergy).toString()}
-            percent={energyPercent}
-            gradient="linear-gradient(90deg, #f2c14e, #94f1b3)"
-          />
-          <CompactGauge
-            align="right"
-            label="Warmth"
-            value={isColdDanger ? "Danger" : `${Math.floor(warmthPercent)}%`}
-            percent={cosmicCold}
-            gradient={
-              isColdDanger
-                ? "linear-gradient(90deg, #f29679, #f2c14e)"
-                : "linear-gradient(90deg, #2a1247, #94f1b3)"
-            }
-            danger={isColdDanger}
-          />
-        </motion.div>
-      ) : (
+      <motion.div
+        style={{
+          position: "absolute",
+          top: useCompactStrip ? "5.85rem" : "5.25rem",
+          left: 0,
+          right: 0,
+          margin: "0 auto",
+          zIndex: 50,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "0.35rem",
+          padding: "0.5rem 0.85rem",
+          borderRadius: "14px",
+          border: "1px solid rgba(251, 191, 36, 0.32)",
+          background: "rgba(8, 2, 26, 0.72)",
+          backdropFilter: "blur(10px)",
+          pointerEvents: "none",
+          boxShadow: "0 12px 28px rgba(0, 0, 0, 0.4)",
+          width: "min(54vw, 210px)",
+          maxWidth: "calc(100vw - 11rem)",
+        }}
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
         <div
           style={{
-            position: "absolute",
-            bottom: "1rem",
-            left: 0,
-            right: 0,
             display: "flex",
+            alignItems: "baseline",
             justifyContent: "space-between",
-            alignItems: "flex-end",
-            padding: "0.75rem 1rem",
-            pointerEvents: "none",
-            zIndex: 50,
-            gap: "1rem",
+            width: "100%",
+            gap: "0.8rem",
+          }}
+        >
+          <span
+            className="cg-display"
+            style={{
+              fontSize: "0.95rem",
+              fontWeight: 500,
+              color: "var(--color-amber, #f2c14e)",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {patternName}
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.72rem",
+              color: "rgba(231, 220, 245, 0.85)",
+              letterSpacing: "0.08em",
+              flexShrink: 0,
+            }}
+          >
+            {patternEdgesLit}/{patternEdgesTotal}
+          </span>
+        </div>
+        <div
+          style={{
+            width: "100%",
+            height: "5px",
+            borderRadius: "999px",
+            background: "rgba(231, 220, 245, 0.12)",
+            overflow: "hidden",
           }}
         >
           <motion.div
-            style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <span style={HUD_LABEL}>Cosmic Energy</span>
-            <div style={METER_TRACK}>
-              <motion.div
-                style={{
-                  height: "100%",
-                  borderRadius: "999px",
-                  background: "linear-gradient(90deg, #f2c14e, #94f1b3)",
-                }}
-                initial={{ width: 0 }}
-                animate={{ width: `${energyPercent}%` }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.78rem", color: "var(--color-fg)" }}>
-              {Math.floor(totalEnergy)}
-            </span>
-          </motion.div>
-
-          <motion.div
-            style={{ display: "flex", flexDirection: "column", gap: "0.35rem", alignItems: "flex-end" }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <span style={HUD_LABEL}>Cosmic Cold</span>
-            <div style={METER_TRACK}>
-              <motion.div
-                style={{ height: "100%", borderRadius: "999px" }}
-                animate={{
-                  width: `${cosmicCold}%`,
-                  background: isColdDanger
-                    ? "linear-gradient(90deg, #f29679, #f2c14e)"
-                    : "linear-gradient(90deg, #2a1247, #94f1b3)",
-                }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.78rem",
-                color: isColdDanger ? "var(--color-warn)" : "var(--color-fg)",
-              }}
-            >
-              {isColdDanger ? "Danger!" : `${Math.floor(warmthPercent)}% warmth`}
-            </span>
-          </motion.div>
+            style={{
+              height: "100%",
+              borderRadius: "999px",
+              background: "linear-gradient(90deg, #94f1b3, #f2c14e)",
+              boxShadow: "0 0 8px rgba(242, 193, 78, 0.6)",
+            }}
+            initial={{ width: 0 }}
+            animate={{ width: `${patternProgress}%` }}
+            transition={{ duration: 0.5 }}
+          />
         </div>
-      )}
+      </motion.div>
+
+      <div
+        style={{
+          position: "absolute",
+          bottom: "1rem",
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+          padding: "0.75rem 1rem",
+          pointerEvents: "none",
+          zIndex: 50,
+          gap: "1rem",
+        }}
+      >
+        <motion.div
+          style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <span style={HUD_LABEL}>Charge</span>
+          <div style={METER_TRACK}>
+            <motion.div
+              style={{
+                height: "100%",
+                borderRadius: "999px",
+                background: "linear-gradient(90deg, #7dd3fc, #94f1b3)",
+              }}
+              initial={{ width: 0 }}
+              animate={{ width: `${energyPercent}%` }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.78rem", color: "var(--color-fg)" }}>
+            {Math.floor(totalEnergy)}
+          </span>
+        </motion.div>
+
+        <motion.div
+          style={{ display: "flex", flexDirection: "column", gap: "0.35rem", alignItems: "flex-end" }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <span style={HUD_LABEL}>Warmth</span>
+          <div style={METER_TRACK}>
+            <motion.div
+              style={{ height: "100%", borderRadius: "999px" }}
+              animate={{
+                width: `${warmthPercent}%`,
+                background: isColdDanger
+                  ? "linear-gradient(90deg, #f29679, #f2c14e)"
+                  : "linear-gradient(90deg, #94f1b3, #7dd3fc)",
+              }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.78rem",
+              color: isColdDanger ? "var(--color-warn)" : "var(--color-fg)",
+            }}
+          >
+            {isColdDanger ? "Danger!" : `${Math.floor(warmthPercent)}%`}
+          </span>
+        </motion.div>
+      </div>
 
       <AnimatePresence>
         {isPaused && (
@@ -302,48 +351,3 @@ export function GameUI({
   );
 }
 
-function CompactGauge({
-  align = "left",
-  danger = false,
-  gradient,
-  label,
-  percent,
-  value,
-}: {
-  align?: "left" | "right";
-  danger?: boolean;
-  gradient: string;
-  label: string;
-  percent: number;
-  value: string;
-}) {
-  return (
-    <div style={{ display: "grid", gap: "4px", textAlign: align }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          justifyContent: "space-between",
-          gap: "0.5rem",
-          fontFamily: "var(--font-mono)",
-          fontSize: "0.58rem",
-          letterSpacing: "0.18em",
-          textTransform: "uppercase",
-          color: "rgba(231, 220, 245, 0.55)",
-          fontWeight: 600,
-        }}
-      >
-        <span>{label}</span>
-        <span style={{ color: danger ? "var(--color-warn)" : "var(--color-fg)" }}>{value}</span>
-      </div>
-      <div style={{ height: "6px", borderRadius: "999px", background: "rgba(231, 220, 245, 0.12)", overflow: "hidden" }}>
-        <motion.div
-          style={{ height: "100%", borderRadius: "999px", background: gradient }}
-          initial={{ width: 0 }}
-          animate={{ width: `${Math.min(100, Math.max(0, percent))}%` }}
-          transition={{ duration: 0.3 }}
-        />
-      </div>
-    </div>
-  );
-}

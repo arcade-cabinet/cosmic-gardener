@@ -17,7 +17,11 @@ export function ConstellationPattern({
 }: ConstellationPatternProps) {
   const completionRatio =
     pattern.connections.length === 0 ? 1 : completedConnections.size / pattern.connections.length;
-  const inactivePulse = 0.22 + completionRatio * 0.3;
+  // Ghost lines must be legible from t=0 — they're how the player sees that
+  // the pinball board IS the constellation. Too faint and the two systems
+  // feel unrelated; too bright and completed edges don't pop. Ramp from
+  // ~0.5 to ~0.8 as the pattern fills.
+  const inactivePulse = 0.5 + completionRatio * 0.3;
 
   return (
     <div className={cn("absolute inset-0 pointer-events-none", className)}>
@@ -47,23 +51,27 @@ export function ConstellationPattern({
               y2={toPoint.y}
               stroke={
                 isCompleted
-                  ? "rgba(251, 191, 36, 0.88)"
+                  ? "rgba(251, 191, 36, 0.92)"
                   : isNextLink
-                    ? "rgba(125, 211, 252, 0.42)"
-                    : "rgba(255, 255, 255, 0.15)"
+                    ? "rgba(148, 241, 179, 0.7)"
+                    : "rgba(181, 210, 255, 0.45)"
               }
-              strokeWidth={isCompleted ? 0.48 : 0.22}
-              strokeDasharray={isCompleted ? "none" : "1 1"}
-              filter={isCompleted ? "drop-shadow(0 0 4px rgba(251,191,36,0.85))" : undefined}
+              strokeWidth={isCompleted ? 0.55 : 0.32}
+              strokeDasharray={isCompleted ? "none" : "1.4 1.2"}
+              filter={
+                isCompleted
+                  ? "drop-shadow(0 0 4px rgba(251,191,36,0.85))"
+                  : "drop-shadow(0 0 1.5px rgba(148,241,179,0.35))"
+              }
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{
                 pathLength: 1,
-                opacity: isCompleted ? 1 : [inactivePulse, inactivePulse + 0.25, inactivePulse],
+                opacity: isCompleted ? 1 : [inactivePulse, inactivePulse + 0.2, inactivePulse],
                 stroke: isCompleted
-                  ? "rgba(251, 191, 36, 0.88)"
+                  ? "rgba(251, 191, 36, 0.92)"
                   : isNextLink
-                    ? "rgba(125, 211, 252, 0.42)"
-                    : "rgba(255, 255, 255, 0.15)",
+                    ? "rgba(148, 241, 179, 0.7)"
+                    : "rgba(181, 210, 255, 0.45)",
               }}
               transition={{
                 delay: index * 0.1,
@@ -127,17 +135,6 @@ export function ConstellationPattern({
           );
         })}
       </svg>
-
-      <motion.div
-        className="absolute top-4 left-1/2 transform -translate-x-1/2"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-      >
-        <span className="text-white/40 text-sm font-light tracking-widest uppercase">
-          {pattern.name}
-        </span>
-      </motion.div>
     </div>
   );
 }
