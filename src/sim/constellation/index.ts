@@ -2,6 +2,7 @@ export {
   CONSTELLATIONS,
   generateVoidZones,
   getConstellationForLevel,
+  getConstellationSequence,
   type ConstellationConnection,
   type ConstellationPattern,
   type ConstellationPoint,

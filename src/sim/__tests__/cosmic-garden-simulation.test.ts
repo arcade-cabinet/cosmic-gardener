@@ -5,7 +5,7 @@ import {
   calculateGrowthStage,
   calculateResonanceBloomBonus,
   calculateStarHitScore,
-  CONSTELLATIONS,
+  getConstellationSequence,
   createDeterministicVoidZones,
   createEnergyStream,
   createStarSeed,
@@ -17,7 +17,7 @@ import {
   resolveOrbStarCollision,
 } from "@/sim/orb";
 
-const lyra = CONSTELLATIONS[0];
+const lyra = getConstellationSequence(42)[0];
 
 describe("cosmic garden simulation", () => {
   test("calculates star growth stages from energy ratios", () => {
@@ -34,7 +34,8 @@ describe("cosmic garden simulation", () => {
     expect(starter).toEqual(again);
     expect(starter.stars).toHaveLength(lyra.points.length);
     expect(starter.completedPoints).toEqual(new Set(lyra.points.map((point) => point.id)));
-    expect(starter.starPointMatches.get("nursery-lyra-l1")).toBe("l1");
+    const firstPointId = lyra.points[0].id;
+    expect(starter.starPointMatches.get(`nursery-${lyra.id}-${firstPointId}`)).toBe(firstPointId);
     expect(new Set(starter.stars.map((star) => star.growthStage))).toContain(1);
   });
 

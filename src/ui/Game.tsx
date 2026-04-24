@@ -448,6 +448,7 @@ export default function Game({ className }: { className?: string }) {
     deactivateRightFlipper,
   } = usePinballPhysics({
     stars: starsForPhysics,
+    voidZones,
     onStarHit: handleStarHit,
     onDrain: handleDrain,
   });
