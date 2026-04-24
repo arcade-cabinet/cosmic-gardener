@@ -1,4 +1,4 @@
-import type { VoidZone as VoidZoneType } from "@/engine/constellations";
+import type { VoidZone as VoidZoneType } from "@/sim/constellation";
 import { motion } from "framer-motion";
 
 const VOID_PARTICLES = Array.from({ length: 6 }, (_, index) => ({

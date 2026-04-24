@@ -36,10 +36,29 @@ Each is its own PR so reviewers can follow the chain end-to-end.
       directory skeleton, tsconfig split, Biome, Vitest (node + dom
       + browser), Playwright, Capacitor Android. All already in place
       from the initial extraction.
-- [ ] **PR B — Engine split.** `src/engine/cosmicGardenSimulation.ts`
-      decomposed into responsibility-scoped modules
-      (`src/sim/orb/*`, `src/sim/constellation/*`, `src/sim/session/*`).
-      Old module path deleted outright. No compat shims.
+- [x] **PR B — Engine split.** `src/engine/*` decomposed into
+      responsibility-scoped modules under `src/sim/`:
+      - `src/sim/orb/physics.ts` — `PinballOrb`, `advancePinballOrb`,
+        `createPinballOrb`, `resolveOrbStarCollision` + physics
+        constants (gravity, friction, flipper force).
+      - `src/sim/constellation/stars.ts` — `StarSeed`,
+        `EnergyStream`, `calculateGrowthStage`,
+        `advanceEnergyNetwork`, factories.
+      - `src/sim/constellation/scoring.ts` — combo window +
+        resonance + hit-score math.
+      - `src/sim/constellation/garden.ts` — `createStarterGarden`,
+        `createDeterministicVoidZones`.
+      - `src/sim/constellation/patterns.ts`,
+        `src/sim/constellation/progress.ts`,
+        `src/sim/constellation/layout.ts` — moved via `git mv`
+        from `src/engine/`.
+      - `src/sim/session/tuning.ts` — moved via `git mv`.
+      - React hooks `usePinballPhysics` and `useEnergyRouting`
+        moved to `src/hooks/`.
+      - Barrels at `src/sim/orb/index.ts`,
+        `src/sim/constellation/index.ts`,
+        `src/sim/session/index.ts` so consumers import by domain.
+      Old `src/engine/` path deleted outright. No compat shims.
 - [x] **PR C — Seeded determinism (scaffold).** `seedrandom` +
       `createRng(seed)` + `hashSeed` + `randomSeed` shipped in
       `src/sim/rng/` (PR #10); codename codec shipped in

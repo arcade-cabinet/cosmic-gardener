@@ -1,4 +1,4 @@
-import type { CosmicLowerBoardLayout } from "@/engine/cosmicBoardLayout";
+import type { CosmicLowerBoardLayout } from "@/sim/constellation";
 import { motion } from "framer-motion";
 
 interface FlippersProps {

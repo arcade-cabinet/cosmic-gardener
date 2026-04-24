@@ -2,7 +2,7 @@ import {
   CONSTELLATIONS,
   type ConstellationPattern,
   getConstellationForLevel,
-} from "./constellations";
+} from "./patterns";
 
 export const DEFAULT_POINT_MATCH_RADIUS = 8;
 

@@ -1,19 +1,21 @@
 import { describe, expect, test } from "vitest";
-import { CONSTELLATIONS } from "./constellations";
 import {
   advanceEnergyNetwork,
-  advancePinballOrb,
   calculateComboMultiplier,
   calculateGrowthStage,
   calculateResonanceBloomBonus,
   calculateStarHitScore,
+  CONSTELLATIONS,
   createDeterministicVoidZones,
   createEnergyStream,
-  createPinballOrb,
   createStarSeed,
   createStarterGarden,
+} from "@/sim/constellation";
+import {
+  advancePinballOrb,
+  createPinballOrb,
   resolveOrbStarCollision,
-} from "./cosmicGardenSimulation";
+} from "@/sim/orb";
 
 const lyra = CONSTELLATIONS[0];
 

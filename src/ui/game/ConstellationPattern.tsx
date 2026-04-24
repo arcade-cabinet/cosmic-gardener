@@ -1,4 +1,4 @@
-import type { ConstellationPattern as ConstellationPatternType } from "@/engine/constellations";
+import type { ConstellationPattern as ConstellationPatternType } from "@/sim/constellation";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 

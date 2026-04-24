@@ -6,8 +6,8 @@ import {
   getPatternConnectionKey,
   isConstellationComplete,
   isGardenCompleteLevel,
-} from "./constellationProgress";
-import { CONSTELLATIONS } from "./constellations";
+} from "./progress";
+import { CONSTELLATIONS } from "./patterns";
 
 const lyra = CONSTELLATIONS[0];
 

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { getCosmicLowerBoardLayout } from "./cosmicBoardLayout";
+import { getCosmicLowerBoardLayout } from "./layout";
 
 describe("cosmic board layout", () => {
   test("moves gauges out of the lower table on very narrow portrait screens", () => {
