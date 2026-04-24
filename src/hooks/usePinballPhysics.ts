@@ -2,8 +2,7 @@ import { isRuntimePaused } from "@/lib/runtimePause";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   advancePinballOrb,
-  createPinballOrb,
-  type PinballOrb,
+    type PinballOrb,
   resolveOrbStarCollision,
 } from "@/sim/orb";
 
@@ -22,8 +21,7 @@ export function usePinballPhysics({ stars, voidZones = [], onStarHit, onDrain }:
   const [rightFlipper, setRightFlipper] = useState(false);
   const animationRef = useRef<number>(null);
   const lastTimeRef = useRef<number>(0);
-  const nextOrbIdRef = useRef(1);
-
+  
   // Live refs to volatile values so the RAF effect can mount once per
   // orbs-has-any flip instead of rebinding every frame. Without this,
   // `stars`/flipper-state/callbacks in the deps array cancel+restart
@@ -42,17 +40,9 @@ export function usePinballPhysics({ stars, voidZones = [], onStarHit, onDrain }:
   onDrainRef.current = onDrain;
 
   const launchOrb = useCallback(
-    (fromX: number, fromY: number, angle: number, power: number = 8) => {
-      const newOrb = createPinballOrb(`orb-${nextOrbIdRef.current}`, fromX, fromY, angle, power);
-      nextOrbIdRef.current += 1;
-
-      setOrbs((prev) => {
-        const next = new Map(prev);
-        next.set(newOrb.id, newOrb);
-        return next;
-      });
-
-      return newOrb.id;
+    () => {
+      // Disabled for puzzle mode
+      return "disabled";
     },
     []
   );
