@@ -34,52 +34,11 @@ conversation context required.
   identity, canvas `ctx.setTransform` prevents dpr^N compound
   across viewport resizes, `trackTimeout` helper centralizes
   timer cleanup on unmount.
+- Graphics + responsive polish (Priority 1) is complete. Stars and Orbs now have rich SVG/DOM visual growth phases instead of primitive DOM particles.
+- Session and scoring depth (Priority 2) is complete. The game now progresses through a "Next Constellation" flow, tracks completed constellations, and persists high scores to localStorage across runs.
+- Test harness parity (Priority 3) is complete. Playwright runs headless tests using the github reporter without blocking.
 
 ## What's NOT done
-
-### Priority 1 — graphics + responsive polish
-
-Per user mandate: primitive DOM particles need replacement with
-custom SVG or sprite work. The nebula background and cosmic dust
-are fine as ambient; the stars and orb are the critical upgrade.
-
-- `src/ui/game/StarSeed.tsx` — render stage-specific visual growth.
-  Currently a plain circle with opacity tied to energy. Should
-  differentiate seed → sprout → glowing stage via SVG or layered
-  Pixi sprite.
-- `src/ui/game/PinballOrb.tsx` — plain circle with trail.
-  Constellation-themed orb (small star) would connect visuals.
-- Element-level responsive polish — viewport is covered by existing
-  media queries; individual HUD elements (especially the
-  score stack + LYRA chip) need audit at 320×568 (iPhone SE),
-  landscape mobile, tablet 1024×768.
-
-### Priority 2 — session + scoring depth
-
-- Level progression after completing a pattern: currently the game
-  just sits in `playing` state. Add a "Next Constellation" flow
-  that seeds a new starter-garden and resets connections, plus an
-  end-of-run summary when the final constellation completes.
-- High-score persistence per-session via `src/hooks/runtimeResult.ts`
-  (pattern already established by sibling repos).
-
-### Priority 3 — test harness parity with bioluminescent-sea
-
-bs ships a multi-viewport Playwright harness at `e2e/journey.spec.ts`
-that dumps screenshots + diagnostics per beat across mobile / tablet
-/ desktop. cg doesn't have one. Copy the pattern:
-
-- Unique port (e.g. 41732).
-- Three viewport projects: mobile-portrait 390×844, tablet 834×1194,
-  desktop 1280×720.
-- Beats: landing → mode picker → begin → first-frame → 10s of play
-  (long enough to see stars grow + auto-connect) → restart.
-- Diagnostics probes for: `hud-stat-level`, `hud-stat-score`,
-  `hud-charge`, `hud-warmth`, `hud-pattern-chip`, landing screen,
-  playing screen, any critical element you want regression-tested.
-
-Add `data-testid` hooks to `src/ui/game/GameUI.tsx` +
-`src/ui/game/ConstellationPattern.tsx` to make the probes stable.
 
 ### Priority 4 — memory-spike audit Medium / Low (not spike-class)
 
@@ -95,6 +54,17 @@ Add `data-testid` hooks to `src/ui/game/GameUI.tsx` +
   allocates 3 arrays per orb per frame. Bounded (MAX_TRAIL_LENGTH =
   15, ≤3 orbs), so low priority, but easy win by reusing a ring
   buffer.
+
+### Remaining Handoff PRD Tasks
+
+- [ ] Custom favicon SVG matches the palette.
+- [ ] Android icon pack rendered from the SVG at all mipmap resolutions.
+- [ ] Apple touch icon at 180×180.
+- [ ] OG image for social sharing (1200×630) stored in `public/` and referenced from `index.html`.
+- [ ] `docs/DESIGN.md` palette rationale and fontography rationale sections are filled in with reasoning (not boilerplate).
+- [ ] Landing hero visual is distinctive — not a generic AI-template gradient.
+- [ ] Documentation queue (README, CLAUDE, AGENTS, STANDARDS, ARCHITECTURE, STATE, RELEASE).
+- [ ] The first release-please PR has been merged, producing a v0.1.0 tag and CHANGELOG entry.
 
 ## How to ship
 
