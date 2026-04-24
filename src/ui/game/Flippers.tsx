@@ -30,6 +30,43 @@ export function Flippers({
         }}
       />
 
+      {/* Mobile-first flipper tap zones: wide invisible buttons
+          in the lower apron area so the flippers are reachable
+          with a thumb without fighting the star-linking drag up
+          in the play area. Covers the bottom ~30% of the viewport,
+          split left/right. On mouse, the paddles themselves are
+          still tappable via their own pointer handlers. */}
+      <div
+        className="absolute left-0 bottom-0 z-30 touch-none"
+        style={{ width: "50%", height: "30%" }}
+        onPointerDown={(e) => {
+          e.preventDefault();
+          onLeftDown();
+        }}
+        onPointerUp={(e) => {
+          e.preventDefault();
+          onLeftUp();
+        }}
+        onPointerCancel={onLeftUp}
+        onPointerLeave={onLeftUp}
+        aria-label="Left flipper"
+      />
+      <div
+        className="absolute right-0 bottom-0 z-30 touch-none"
+        style={{ width: "50%", height: "30%" }}
+        onPointerDown={(e) => {
+          e.preventDefault();
+          onRightDown();
+        }}
+        onPointerUp={(e) => {
+          e.preventDefault();
+          onRightUp();
+        }}
+        onPointerCancel={onRightUp}
+        onPointerLeave={onRightUp}
+        aria-label="Right flipper"
+      />
+
       <motion.div
         className="absolute cursor-pointer z-40"
         style={{

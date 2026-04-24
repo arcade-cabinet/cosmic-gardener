@@ -396,6 +396,66 @@ export default function Game({ className }: { className?: string }) {
     totalConstellations: CONSTELLATIONS.length,
   });
 
+  // Auto-connect constellation points whose both endpoints have
+  // reached full growth (growthStage === 3). This unifies the two
+  // previously-separate modes of play: pinball hits charge stars,
+  // and the constellation blooms itself as a consequence. The
+  // player's attention stays on keeping the orb alive. Manual
+  // drag-to-connect still works for players who want direct
+  // control.
+  useEffect(() => {
+    if (gameState !== "playing" && gameState !== "tutorial" && gameState !== "zenMode") return;
+    if (!currentPattern) return;
+
+    // Build a reverse lookup: pointId -> starId (the star that the
+    // player planted at that point, if any).
+    const starByPoint = new Map<string, string>();
+    for (const [starId, pointId] of starPointMatches.entries()) {
+      starByPoint.set(pointId, starId);
+    }
+
+    for (const edge of currentPattern.connections) {
+      const connectionKey = getPatternConnectionKey(
+        currentPattern,
+        starPointMatches,
+        starByPoint.get(edge.from) ?? "",
+        starByPoint.get(edge.to) ?? "",
+      );
+      if (!connectionKey || completedConnections.has(connectionKey)) continue;
+
+      const fromStarId = starByPoint.get(edge.from);
+      const toStarId = starByPoint.get(edge.to);
+      if (!fromStarId || !toStarId) continue;
+      const fromStar = stars.get(fromStarId);
+      const toStar = stars.get(toStarId);
+      if (!fromStar || !toStar) continue;
+
+      // Both endpoints must be at full growth for the constellation
+      // to auto-bloom this edge.
+      if (fromStar.growthStage < 3 || toStar.growthStage < 3) continue;
+
+      createStream(fromStarId, toStarId);
+      const nextConnectionCount = completedConnections.size + 1;
+      const points = calculateResonanceBloomBonus(nextConnectionCount, comboMultiplier);
+      setCompletedConnections((prev) => new Set([...prev, connectionKey]));
+      setScore((prev) => prev + points);
+      setResonanceBloom({ connectionCount: nextConnectionCount, points });
+      setTimeout(() => setResonanceBloom(null), 1200);
+      audio.playConstellationHum();
+      break; // Award one connection per render pass so the bloom
+              // animations stagger instead of all firing at once.
+    }
+  }, [
+    gameState,
+    stars,
+    currentPattern,
+    starPointMatches,
+    completedConnections,
+    comboMultiplier,
+    createStream,
+    audio.playConstellationHum,
+  ]);
+
   const loadLevel = useCallback(
     (targetLevel: number) => {
       const pattern = getConstellationForLevel(targetLevel);
@@ -956,9 +1016,9 @@ export default function Game({ className }: { className?: string }) {
           >
             <StartScreen
               title="Cosmic Gardener"
-              subtitle="Plant star seeds, keep the orb alive, and bloom constellations across a living pinball sky."
+              subtitle="Keep the orb alive. Each star it strikes will glow; wake the pattern, and the constellation blooms itself."
               primaryAction={{
-                label: "Begin the Journey",
+                label: "Launch the Orb",
                 onClick: () => startGame(sessionMode),
               }}
             >
@@ -991,7 +1051,7 @@ export default function Game({ className }: { className?: string }) {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
             >
-              <h2 className="text-3xl font-light text-white mb-8">The Amazing Journey</h2>
+              <h2 className="text-3xl font-light text-white mb-8">How a constellation blooms</h2>
 
               <div className="space-y-6 text-left mb-10">
                 <div className="flex items-start gap-4">
@@ -999,9 +1059,9 @@ export default function Game({ className }: { className?: string }) {
                     <span className="text-amber-400">1</span>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">Wake the Nursery</h3>
+                    <h3 className="text-white font-medium mb-1">Tap a side to flip</h3>
                     <p className="text-white/60 text-sm">
-                      Each constellation begins with young bumper stars waiting for energy.
+                      Hold the left or right half of the screen to fire the nearest flipper.
                     </p>
                   </div>
                 </div>
@@ -1011,9 +1071,9 @@ export default function Game({ className }: { className?: string }) {
                     <span className="text-pink-400">2</span>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">Keep the Orb Alive</h3>
+                    <h3 className="text-white font-medium mb-1">Charge the stars</h3>
                     <p className="text-white/60 text-sm">
-                      Bounce the orb through the nursery lanes before cosmic cold overtakes them.
+                      Every hit adds light to a star. Fully-charged stars glow golden.
                     </p>
                   </div>
                 </div>
@@ -1023,9 +1083,9 @@ export default function Game({ className }: { className?: string }) {
                     <span className="text-purple-400">3</span>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">Grow Constellations</h3>
+                    <h3 className="text-white font-medium mb-1">Pairs bloom the pattern</h3>
                     <p className="text-white/60 text-sm">
-                      Route charged stars into the pattern and cultivate the living sky.
+                      When two neighbouring stars are both full, their edge lights up — no aim needed.
                     </p>
                   </div>
                 </div>
@@ -1037,7 +1097,7 @@ export default function Game({ className }: { className?: string }) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Play Ball
+                Launch the orb
               </motion.button>
             </motion.div>
           </motion.div>
