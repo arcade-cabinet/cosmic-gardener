@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">
+  <title>Cosmic Gardener — adaptive launcher foreground</title>
+  <!--
+    Adaptive-icon foreground. Transparent background; the launcher
+    system composes this over the `ic_launcher_background` color.
+    Mark is centered inside the 66dp safe zone (21..87 on the
+    108dp canvas).
+  -->
+
+  <!-- Soft nebula halo so the mark reads even on a solid bg -->
+  <circle cx="54" cy="54" r="34" fill="#2a1247" opacity="0.55" />
+  <circle cx="54" cy="54" r="24" fill="#94f1b3" opacity="0.12" />
+
+  <!-- Central orb -->
+  <circle cx="54" cy="54" r="14" fill="#d9f2ec" opacity="0.95" />
+  <circle cx="51" cy="51" r="14" fill="#94f1b3" opacity="0.55" />
+
+  <!-- Constellation ring — 5 amber star-points -->
+  <circle cx="54" cy="22" r="3" fill="#f2c14e" />
+  <circle cx="84" cy="43" r="2.6" fill="#f2c14e" />
+  <circle cx="73" cy="80" r="3" fill="#f2c14e" />
+  <circle cx="35" cy="80" r="2.6" fill="#f2c14e" />
+  <circle cx="24" cy="43" r="3" fill="#f2c14e" />
+
+  <!-- Connecting pentagon -->
+  <path
+    d="M 54 22 L 84 43 L 73 80 L 35 80 L 24 43 Z"
+    fill="none"
+    stroke="#f2c14e"
+    stroke-width="1.1"
+    opacity="0.4"
+  />
+</svg>

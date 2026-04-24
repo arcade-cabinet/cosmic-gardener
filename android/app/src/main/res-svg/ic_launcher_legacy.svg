@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">
+  <title>Cosmic Gardener — legacy launcher (adaptive-unaware devices)</title>
+  <!--
+    Legacy launcher: full backdrop baked in so pre-Oreo devices
+    see a complete icon. Adaptive devices use ic_launcher.xml +
+    ic_launcher_foreground.svg instead.
+  -->
+  <rect width="108" height="108" rx="18" fill="#08021a" />
+  <circle cx="54" cy="54" r="38" fill="#120530" />
+  <circle cx="54" cy="54" r="28" fill="#2a1247" opacity="0.7" />
+  <circle cx="54" cy="54" r="20" fill="#94f1b3" opacity="0.12" />
+
+  <circle cx="54" cy="54" r="12" fill="#d9f2ec" opacity="0.95" />
+  <circle cx="51" cy="51" r="12" fill="#94f1b3" opacity="0.55" />
+
+  <circle cx="54" cy="24" r="2.6" fill="#f2c14e" />
+  <circle cx="82" cy="44" r="2.4" fill="#f2c14e" />
+  <circle cx="71" cy="78" r="2.6" fill="#f2c14e" />
+  <circle cx="37" cy="78" r="2.4" fill="#f2c14e" />
+  <circle cx="26" cy="44" r="2.6" fill="#f2c14e" />
+
+  <path
+    d="M 54 24 L 82 44 L 71 78 L 37 78 L 26 44 Z"
+    fill="none"
+    stroke="#f2c14e"
+    stroke-width="0.9"
+    opacity="0.4"
+  />
+</svg>

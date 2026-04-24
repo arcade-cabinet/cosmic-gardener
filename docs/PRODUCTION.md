@@ -99,10 +99,18 @@ Each is its own PR so reviewers can follow the chain end-to-end.
       derived (via `createStarterGarden` from the pattern's
       `points`); if distinct star-seed authoring is ever needed
       it's a follow-up on the same pipeline.
-- [ ] **PR G — Identity icons.** Favicon, apple-touch, OG image with
-      the cosmic-gardener visual identity (star-pattern + orb, deep
-      space + warm nebula accent palette). Android icon pack at all
-      mipmap resolutions.
+- [x] **PR G — Identity icons.** Web favicons shipped in PR #15
+      (`public/{favicon,apple-touch-icon,og-image}.svg`), deep-space
+      violet (#08021a) + moss green (#94f1b3) + firefly amber
+      (#f2c14e) palette, central orb with 5-point amber
+      constellation ring. Android mipmap pack generated from
+      `res-svg/ic_launcher_{foreground,legacy}.svg` at all five
+      densities (48 / 72 / 96 / 144 / 192 px) — covers
+      `ic_launcher.png`, `ic_launcher_round.png`, and
+      `ic_launcher_foreground.png` for the adaptive-icon path.
+      Adaptive-icon background updated from default white to
+      `#08021a` so the launcher reads as the same cosmic-space
+      identity as the web tabs.
 - [ ] **PR H — Production deploy.** `release.yml` tags + builds
       Android AAB. `cd.yml` deploys web bundle to GitHub Pages.
       `analysis-nightly.yml` runs a seed determinism sweep.
