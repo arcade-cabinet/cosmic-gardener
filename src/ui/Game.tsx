@@ -316,6 +316,7 @@ export default function Game({ className }: { className?: string }) {
     seedStars,
     resetGame,
   } = useEnergyRouting({
+    voidZones,
     onEnergyDepleted: handleEnergyDepleted,
   });
 

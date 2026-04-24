@@ -60,7 +60,7 @@ describe("cosmic garden simulation", () => {
     const streams = new Map([
       [createEnergyStream("from", "to").id, createEnergyStream("from", "to")],
     ]);
-    const next = advanceEnergyNetwork(stars, streams, 4);
+    const next = advanceEnergyNetwork(stars, streams, [], 4).nextStars;
 
     expect(next.get("from")?.energy).toBe(42);
     expect(next.get("to")?.energy).toBe(28);
