@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0](https://github.com/arcade-cabinet/cosmic-gardener/compare/v0.3.0...v0.4.0) (2026-04-24)
+
+
+### Features
+
+* **cg:** add physical forces to the playfield ([#38](https://github.com/arcade-cabinet/cosmic-gardener/issues/38)) ([e20f039](https://github.com/arcade-cabinet/cosmic-gardener/commit/e20f039527d82ad224c99b6487ed050b7c91c262))
+* **cg:** void zones drain energy ([#41](https://github.com/arcade-cabinet/cosmic-gardener/issues/41)) ([8c038a6](https://github.com/arcade-cabinet/cosmic-gardener/commit/8c038a6d742ebb9e360cb12d2f440309fb4d373a))
+
+
+### Refactoring
+
+* **cg:** pivot to pure puzzle gameplay ([#40](https://github.com/arcade-cabinet/cosmic-gardener/issues/40)) ([e8e39a0](https://github.com/arcade-cabinet/cosmic-gardener/commit/e8e39a0ba2e38b2fcd458e820d0ead06abbabadc))
+
 ## [0.3.0](https://github.com/arcade-cabinet/cosmic-gardener/compare/v0.2.0...v0.3.0) (2026-04-24)
 
 
