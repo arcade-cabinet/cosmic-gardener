@@ -111,9 +111,25 @@ Each is its own PR so reviewers can follow the chain end-to-end.
       Adaptive-icon background updated from default white to
       `#08021a` so the launcher reads as the same cosmic-space
       identity as the web tabs.
-- [ ] **PR H — Production deploy.** `release.yml` tags + builds
-      Android AAB. `cd.yml` deploys web bundle to GitHub Pages.
-      `analysis-nightly.yml` runs a seed determinism sweep.
+- [x] **PR H — Production deploy.**
+      - `release.yml` — release-please tags + builds the Android
+        AAB (signed if `ANDROID_KEYSTORE_BASE64` is set,
+        debug-bundle otherwise). Shipped earlier.
+      - `cd.yml` — on every `push:main`, builds the web bundle
+        with `GITHUB_PAGES=true` so the Vite base resolves to
+        `/cosmic-gardener/`, then deploys via
+        `actions/deploy-pages`. Shipped earlier.
+      - `analysis-nightly.yml` — cron-scheduled determinism sweep
+        at 08:15 UTC. Runs `scripts/determinism-sweep.ts`, which
+        exercises the constellation catalog + starter-garden +
+        void-zone factories + pinball-orb physics across 10
+        levels and 180 frames, asserting byte-identical output
+        across repeated calls, no NaN/Infinity in any numeric
+        field, energy + growth fields in valid ranges, and
+        per-frame cost under 3ms. Opens an issue labeled
+        `sim-regression` on failure. Local run: `pnpm exec tsx
+        scripts/determinism-sweep.ts` (6ms total / 0.17ms worst
+        frame on commit machine).
 
 ## Quality gates
 
