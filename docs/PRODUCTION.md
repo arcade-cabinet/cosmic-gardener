@@ -40,16 +40,21 @@ Each is its own PR so reviewers can follow the chain end-to-end.
       decomposed into responsibility-scoped modules
       (`src/sim/orb/*`, `src/sim/constellation/*`, `src/sim/session/*`).
       Old module path deleted outright. No compat shims.
-- [ ] **PR C — Seeded determinism.** `seedrandom` + `createRng(seed)`
-      plumbed through every constellation / star-seed / void-zone
-      placement. Landing shows a codename preview for the next
-      constellation ("Your Next Pattern" in Fraunces). `?seed=<slug>`
-      makes runs shareable.
-- [ ] **PR D — Identity-forward landing.** Animated hero replaces the
-      typographic-only card: drifting cosmic dust, a slow-spinning
-      star-seed pattern, the orb drifting across. Verb teaser chips
-      pre-teach the loop ("launch the orb · tend the pattern ·
-      breathe"). Procedural blurb under the codename.
+- [x] **PR C — Seeded determinism (scaffold).** `seedrandom` +
+      `createRng(seed)` + `hashSeed` + `randomSeed` shipped in
+      `src/sim/rng/` (PR #10); codename codec shipped in
+      `src/sim/rng/codename.ts` (PR #13). Adjective × adjective ×
+      noun × 64-word pools = 262,144 distinct codenames per 18-bit
+      seed. The engine itself is already deterministic (no
+      `Math.random`); plumbing the codename into the landing card +
+      `?seed=<slug>` URL is the follow-up.
+- [x] **PR D — Identity-forward landing.** Animated cosmic-nursery
+      hero shipped (PR #11): starfield + drifting cosmic dust +
+      central pulsing orb with a constellation ring. POC-leakage
+      copy purged — verb chips now "Launch the orb / Awaken the
+      pattern / Rest when it hums", title uses Fraunces instead of
+      the stale bs-display class. Codename + procedural blurb are
+      the follow-up once codename is wired into the landing card.
 - [ ] **PR E — Audio stack.** Tone.js ambient drone with per-stage
       chord movement (open fifth → sus4 → minor 9th resolution on
       constellation hum). Tone-synthesized SFX for flipper contact,
@@ -95,8 +100,10 @@ Each is its own PR so reviewers can follow the chain end-to-end.
 - [x] `cd.yml` — on push:main: deploy Pages artifact.
 - [ ] `analysis-nightly.yml` — determinism sweep once seeded
       content lands.
-- [ ] `automerge.yml` — auto-merge green dependabot PRs for
-      semver-patch + semver-minor updates.
+- [x] `automerge.yml` — auto-merge green dependabot PRs for
+      semver-patch + semver-minor updates. Shipped in PR #12; mirrors
+      bioluminescent-sea's workflow. Majors still require human
+      review.
 
 ## Decisions that need lore/design follow-through
 
