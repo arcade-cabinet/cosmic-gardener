@@ -975,11 +975,12 @@ export default function Game({ className }: { className?: string }) {
           />
 
           <motion.div
+            data-testid="playing-screen"
             className="absolute top-4 left-1/2 transform -translate-x-1/2 text-center pointer-events-none z-50"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="text-3xl font-light text-white tabular-nums">
+            <div data-testid="hud-stat-score" className="text-3xl font-light text-white tabular-nums">
               {score.toLocaleString()}
             </div>
             {comboMultiplier > 1 && (
@@ -1076,6 +1077,7 @@ export default function Game({ className }: { className?: string }) {
       <AnimatePresence>
         {gameState === "intro" && (
           <motion.div
+            data-testid="landing-screen"
             className="absolute inset-0 z-[100]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
