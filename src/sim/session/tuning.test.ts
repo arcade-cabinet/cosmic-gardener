@@ -23,7 +23,7 @@ describe("cosmic session tuning", () => {
   });
 
   test("scales void-zone pressure without changing deterministic placement", () => {
-    const zones = generateVoidZones(3);
+    const zones = generateVoidZones(42, 3);
     const cozy = tuneVoidZonesForMode(zones, "cozy");
     const challenge = tuneVoidZonesForMode(zones, "challenge");
 

@@ -55,10 +55,10 @@ export function isConstellationComplete(
   return allPointsPlanted && allConnectionsMade;
 }
 
-export function getNextConstellationPreview(level: number) {
+export function getNextConstellationPreview(seed: number, level: number) {
   if (level + 1 > CONSTELLATIONS.length) return null;
 
-  const nextPattern = getConstellationForLevel(level + 1);
+  const nextPattern = getConstellationForLevel(seed, level + 1);
 
   return {
     connectionCount: nextPattern.connections.length,
