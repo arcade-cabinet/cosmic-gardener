@@ -1186,7 +1186,10 @@ export default function Game({ className }: { className?: string }) {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
             >
-              <h2 className="text-3xl font-light text-white mb-8">How a constellation blooms</h2>
+              <h2 className="text-3xl font-light text-cyan-200 mb-4">Awaken the Sector</h2>
+              <p className="text-white/70 text-sm mb-8">
+                Your presence brings warmth to this region. Keep the orb moving to deliver light to every dormant star.
+              </p>
 
               <div className="space-y-6 text-left mb-10">
                 <div className="flex items-start gap-4">
@@ -1194,9 +1197,9 @@ export default function Game({ className }: { className?: string }) {
                     <span className="text-amber-400">1</span>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">Tap a side to flip</h3>
+                    <h3 className="text-white font-medium mb-1">Keep the spark alive</h3>
                     <p className="text-white/60 text-sm">
-                      Hold the left or right half of the screen to fire the nearest flipper.
+                      Tap the left or right half of the screen to fire the flippers and prevent the orb from fading into the void.
                     </p>
                   </div>
                 </div>
@@ -1206,9 +1209,9 @@ export default function Game({ className }: { className?: string }) {
                     <span className="text-pink-400">2</span>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">Charge the stars</h3>
+                    <h3 className="text-white font-medium mb-1">Ignite the seeds</h3>
                     <p className="text-white/60 text-sm">
-                      Every hit adds light to a star. Fully-charged stars glow golden.
+                      Striking a star seed transfers your energy into it. Strike them repeatedly until they reach full incandescence.
                     </p>
                   </div>
                 </div>
@@ -1218,9 +1221,9 @@ export default function Game({ className }: { className?: string }) {
                     <span className="text-purple-400">3</span>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">Pairs bloom the pattern</h3>
+                    <h3 className="text-white font-medium mb-1">Complete the constellation</h3>
                     <p className="text-white/60 text-sm">
-                      When two neighbouring stars are both full, their edge lights up — no aim needed.
+                      As adjacent seeds reach full power, they will automatically connect. Light the entire pattern to bring life to the sector.
                     </p>
                   </div>
                 </div>

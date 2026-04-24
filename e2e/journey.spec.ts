@@ -8,10 +8,12 @@ test.describe("Cosmic Gardener — User Journey", () => {
     await expect(page.getByText("Cosmic Gardener")).toBeVisible();
     
     // 2. Mode Picker
-    await page.getByRole("button", { name: "Launch the Orb", exact: true }).click();
+    await page.getByRole("button", { name: "Initialize Nursery", exact: true }).click();
+    await expect(page.getByText("Nursery Configuration")).toBeVisible();
+    await page.getByRole("button", { name: "Begin Mission", exact: true }).click();
     
     // 3. Tutorial / Begin
-    await expect(page.getByText("How a constellation blooms")).toBeVisible();
+    await expect(page.getByText("Awaken the Sector")).toBeVisible();
     await page.getByRole("button", { name: "Launch the orb", exact: true }).click();
     
     // 4. First Frame
@@ -31,6 +33,6 @@ test.describe("Cosmic Gardener — User Journey", () => {
     await page.getByRole("button", { name: "Restart" }).click();
     
     // It should go back to tutorial
-    await expect(page.getByText("How a constellation blooms")).toBeVisible();
+    await expect(page.getByText("Awaken the Sector")).toBeVisible();
   });
 });
