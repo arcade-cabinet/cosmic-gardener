@@ -23,6 +23,21 @@ export function usePinballPhysics({ stars, onStarHit, onDrain }: UsePinballPhysi
   const lastTimeRef = useRef<number>(0);
   const nextOrbIdRef = useRef(1);
 
+  // Live refs to volatile values so the RAF effect can mount once per
+  // orbs-has-any flip instead of rebinding every frame. Without this,
+  // `stars`/flipper-state/callbacks in the deps array cancel+restart
+  // the animation frame each tick, producing tap-lag and GC churn.
+  const starsRef = useRef(stars);
+  starsRef.current = stars;
+  const leftFlipperRef = useRef(leftFlipper);
+  leftFlipperRef.current = leftFlipper;
+  const rightFlipperRef = useRef(rightFlipper);
+  rightFlipperRef.current = rightFlipper;
+  const onStarHitRef = useRef(onStarHit);
+  onStarHitRef.current = onStarHit;
+  const onDrainRef = useRef(onDrain);
+  onDrainRef.current = onDrain;
+
   const launchOrb = useCallback(
     (fromX: number, fromY: number, angle: number, power: number = 8) => {
       const newOrb = createPinballOrb(`orb-${nextOrbIdRef.current}`, fromX, fromY, angle, power);
@@ -44,8 +59,9 @@ export function usePinballPhysics({ stars, onStarHit, onDrain }: UsePinballPhysi
   const activateRightFlipper = useCallback(() => setRightFlipper(true), []);
   const deactivateRightFlipper = useCallback(() => setRightFlipper(false), []);
 
+  const hasOrbs = orbs.size > 0;
   useEffect(() => {
-    if (orbs.size === 0) return undefined;
+    if (!hasOrbs) return undefined;
 
     const simulate = (time: number) => {
       if (!lastTimeRef.current) lastTimeRef.current = time;
@@ -61,22 +77,22 @@ export function usePinballPhysics({ stars, onStarHit, onDrain }: UsePinballPhysi
 
             const step = advancePinballOrb(orb, {
               delta,
-              leftFlipper,
-              rightFlipper,
+              leftFlipper: leftFlipperRef.current,
+              rightFlipper: rightFlipperRef.current,
             });
             let nextOrb = step.orb;
 
             if (step.drained) {
-              onDrain();
+              onDrainRef.current();
             }
 
-            stars.forEach((star) => {
+            starsRef.current.forEach((star) => {
               if (!nextOrb.active) return;
 
               const collision = resolveOrbStarCollision(nextOrb, star);
               if (collision.hit) {
                 nextOrb = collision.orb;
-                onStarHit(star.id);
+                onStarHitRef.current(star.id);
               }
             });
 
@@ -101,7 +117,7 @@ export function usePinballPhysics({ stars, onStarHit, onDrain }: UsePinballPhysi
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [orbs.size, stars, leftFlipper, rightFlipper, onStarHit, onDrain]);
+  }, [hasOrbs]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

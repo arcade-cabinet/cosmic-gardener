@@ -137,6 +137,16 @@ export function useEnergyRouting({ onEnergyDepleted }: UseEnergyRoutingProps = {
     [stars, streams]
   );
 
+  // Live refs to volatile values so the RAF effect can mount once
+  // instead of rebinding on every tick. `streams` is state that
+  // changes when the player connects stars; `onEnergyDepleted` is a
+  // closure from Game.tsx that churns on every render. Reading them
+  // through refs keeps the animation frame chain stable.
+  const streamsRef = useRef(streams);
+  streamsRef.current = streams;
+  const onEnergyDepletedRef = useRef(onEnergyDepleted);
+  onEnergyDepletedRef.current = onEnergyDepleted;
+
   useEffect(() => {
     const animate = (time: number) => {
       if (!lastTimeRef.current) lastTimeRef.current = time;
@@ -146,13 +156,13 @@ export function useEnergyRouting({ onEnergyDepleted }: UseEnergyRoutingProps = {
       if (!isRuntimePaused()) {
         setCosmicCold((prev) => {
           const newCold = prev + delta * 0.5;
-          if (newCold >= MAX_COSMIC_COLD && onEnergyDepleted) {
-            onEnergyDepleted();
+          if (newCold >= MAX_COSMIC_COLD && onEnergyDepletedRef.current) {
+            onEnergyDepletedRef.current();
           }
           return Math.min(newCold, MAX_COSMIC_COLD);
         });
 
-        setStars((prevStars) => advanceEnergyNetwork(prevStars, streams, delta));
+        setStars((prevStars) => advanceEnergyNetwork(prevStars, streamsRef.current, delta));
       }
 
       animationRef.current = requestAnimationFrame(animate);
@@ -165,7 +175,7 @@ export function useEnergyRouting({ onEnergyDepleted }: UseEnergyRoutingProps = {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [streams, onEnergyDepleted]);
+  }, []);
 
   const seedStars = useCallback(
     (seededStars: StarSeed[], energyBudget = COSMIC_ENERGY_CAPACITY) => {
