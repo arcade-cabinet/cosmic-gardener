@@ -33,14 +33,11 @@ import { useAudio } from "@/audio/useAudio";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BallLauncher } from "./game/BallLauncher";
 import { ConstellationPattern } from "./game/ConstellationPattern";
 import { CosmicDust } from "./game/CosmicDust";
 import { EnergyStream } from "./game/EnergyStream";
-import { Flippers } from "./game/Flippers";
 import { GameUI } from "./game/GameUI";
 import { NebulaBackground } from "./game/NebulaBackground";
-import { PinballOrb } from "./game/PinballOrb";
 import { StarSeed } from "./game/StarSeed";
 import { VoidZone } from "./game/VoidZone";
 
@@ -288,8 +285,7 @@ export default function Game({ className }: { className?: string }) {
     points: number;
   } | null>(null);
   const [recoveryBloomsUsed, setRecoveryBloomsUsed] = useState(0);
-  const [launchPulse, setLaunchPulse] = useState(0);
-  const [drainPulse, setDrainPulse] = useState(0);
+    const [drainPulse, setDrainPulse] = useState(0);
   const [zenTransitionSeen, setZenTransitionSeen] = useState(false);
 
   const gardenRef = useRef<HTMLDivElement>(null);
@@ -437,16 +433,7 @@ export default function Game({ className }: { className?: string }) {
     setComboMultiplier(1);
   }, [completedConnections.size, cosmicCold, recoveryBloomsUsed, sessionMode, trackTimeout]);
 
-  const {
-    orbs,
-    leftFlipper,
-    rightFlipper,
-    launchOrb,
-    activateLeftFlipper,
-    deactivateLeftFlipper,
-    activateRightFlipper,
-    deactivateRightFlipper,
-  } = usePinballPhysics({
+  usePinballPhysics({
     stars: starsForPhysics,
     voidZones,
     onStarHit: handleStarHit,
@@ -687,15 +674,7 @@ export default function Game({ className }: { className?: string }) {
     ]
   );
 
-  const handleLaunch = useCallback(
-    (x: number, y: number, angle: number, power: number) => {
-      if (orbs.size < 3) {
-        launchOrb(x, y, angle, power);
-        setLaunchPulse((prev) => prev + 1);
-      }
-    },
-    [orbs.size, launchOrb]
-  );
+  
 
   const startGame = (mode: SessionMode = sessionMode, savedSnapshot?: CosmicRunSnapshot | null, seed: number = runSeed) => {
     // Resume audio from the user gesture that triggers the game start.
@@ -835,20 +814,7 @@ export default function Game({ className }: { className?: string }) {
         />
       )}
 
-      <AnimatePresence>
-        {launchPulse > 0 && (
-          <motion.div
-            key={`launch-${launchPulse}`}
-            aria-hidden="true"
-            className="pointer-events-none absolute right-[5%] bottom-[16%] z-30 h-28 w-16 rounded-full border border-amber-200/50"
-            initial={{ opacity: 0.85, scale: 0.45, y: 20 }}
-            animate={{ opacity: 0, scale: 1.35, y: -48 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.72 }}
-            style={{ boxShadow: "0 0 32px rgba(251,191,36,0.45)" }}
-          />
-        )}
-      </AnimatePresence>
+      
 
       <AnimatePresence>
         {drainPulse > 0 && (
@@ -924,12 +890,6 @@ export default function Game({ className }: { className?: string }) {
       </AnimatePresence>
 
       <AnimatePresence>
-        {Array.from(orbs.values()).map((orb) => (
-          <PinballOrb key={orb.id} orb={orb} />
-        ))}
-      </AnimatePresence>
-
-      <AnimatePresence>
         {showHitEffect && (
           <motion.div
             className="absolute pointer-events-none z-50 text-amber-400 font-bold text-lg"
@@ -949,21 +909,9 @@ export default function Game({ className }: { className?: string }) {
         )}
       </AnimatePresence>
 
-      {(gameState === "playing" || gameState === "zenMode") && (
-        <Flippers
-          layout={lowerBoardLayout}
-          leftActive={leftFlipper}
-          rightActive={rightFlipper}
-          onLeftDown={activateLeftFlipper}
-          onLeftUp={deactivateLeftFlipper}
-          onRightDown={activateRightFlipper}
-          onRightUp={deactivateRightFlipper}
-        />
-      )}
+      
 
-      {(gameState === "playing" || gameState === "zenMode") && (
-        <BallLauncher layout={lowerBoardLayout} onLaunch={handleLaunch} disabled={orbs.size >= 3} />
-      )}
+      
 
       {(gameState === "playing" || gameState === "paused" || gameState === "zenMode") && (
         <>
