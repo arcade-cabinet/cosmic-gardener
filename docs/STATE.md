@@ -1,11 +1,32 @@
 ---
 title: State
-updated: 2026-04-23
+updated: 2026-04-24
 status: in-progress
 domain: context
 ---
 
 # State
+
+## 2026-04-24 update
+
+Since the 2026-04-23 baseline:
+
+- **PR #25** — onboarding copy matches unified one-game model
+- **PR #26** — pattern-progress HUD unifies pinball + constellation
+  (top-center `LYRA · 2/5 lit` chip + brighter ghost outline +
+  auto-connect on dual full-growth)
+- **PR #27** — memory-spike perf patches (RAF rebind storm fix,
+  canvas transform uses `setTransform`, auto-connect keyed on
+  signature, centralized timer cleanup)
+
+Net effect: the game now reads as ONE activity (hit the stars →
+fill the pattern) rather than two overlapping games. Pinball +
+constellation are visibly the same loop.
+
+For decisions and reasons, see
+[docs/agentic/decisions-log.md](agentic/decisions-log.md). For the
+next agent's pickup list, see
+[docs/agentic/next-work.md](agentic/next-work.md).
 
 ## Current baseline
 
