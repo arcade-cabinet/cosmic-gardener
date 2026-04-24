@@ -24,25 +24,22 @@ does not kill, it just asks the player to begin again.
 ## Player journey
 
 1. **Land.** The title card reads "Cosmic Gardener" in Fraunces
-   mint-on-void. Subtitle: *"Plant star seeds, keep the orb alive,
-   and bloom constellations across a living pinball sky."* Three
-   verb-chip teasers (Collect bioluminescence / Read the bottom banner
-   / Surface before oxygen ends) — wait, that's the other game. For
-   CG the three chips describe the loop:
-   *Plant → Bloom → Rest.* One primary CTA: "Begin the journey."
-2. **Launch.** The player sees the playfield framed by flippers at
-   bottom, the nursery at top, star-seeds waiting dim. A launcher
-   tutorial prompt reads "Play Ball" the first time. The orb fires.
-3. **Route.** Flippers keep the orb alive. Each star-seed the orb
+   mint-on-void. Subtitle: *"You are a Gardener of the Void. Your mission: plant star seeds to breathe life into dead space. Each seed phrase generates a unique sector of the universe."* One primary CTA: "Initialize Nursery."
+2. **Setup.** The player configures their sector, seeding the RNG via an adjective-adjective-noun codename (e.g. "Crystalline Bloomwise Orbit"), and selecting a cultivation mode.
+3. **Launch.** The player sees the playfield framed by flippers at
+   bottom, the nursery at top, star-seeds waiting dim. A tutorial
+   prompt explains how to flip, charge, and bloom. The orb fires.
+4. **Route.** Flippers keep the orb alive. Each star-seed the orb
    touches awakens it. The sequence matters — the constellation glows
-   only along the path the sky is asking for, and the slot dots at
-   top-left fill as the pattern is completed.
-4. **Warm.** The Warmth gauge drains as the orb lingers in voids or
+   only along the path the sky is asking for, and the HUD chip tracks
+   pattern completion.
+5. **Warm.** The Warmth gauge drains as the orb lingers in voids or
    bounces without progress. Awakening seeds replenishes warmth. If
    warmth reaches zero the constellation closes.
-5. **Rest.** When the final seed blooms the playfield dims, the
-   constellation hums, and the HUD offers "continue" — not "play
-   again." The run does not end; the gardener's shift does.
+6. **Rest.** When the final seed blooms the playfield dims, the
+   constellation hums, and the gardener progresses to the next pattern. 
+   When the full nursery is complete, the run does not end; the gardener's 
+   shift transitions into an endless Zen garden.
 
 ## Palette rationale
 
