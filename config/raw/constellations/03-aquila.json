@@ -1,0 +1,24 @@
+{
+  "id": "aquila",
+  "name": "Aquila",
+  "difficulty": 3,
+  "requiredEnergy": 200,
+  "points": [
+    { "id": "a1", "x": 50, "y": 20 },
+    { "id": "a2", "x": 40, "y": 40 },
+    { "id": "a3", "x": 60, "y": 40 },
+    { "id": "a4", "x": 50, "y": 55 },
+    { "id": "a5", "x": 30, "y": 70 },
+    { "id": "a6", "x": 70, "y": 70 },
+    { "id": "a7", "x": 50, "y": 80 }
+  ],
+  "connections": [
+    { "from": "a1", "to": "a2" },
+    { "from": "a1", "to": "a3" },
+    { "from": "a2", "to": "a4" },
+    { "from": "a3", "to": "a4" },
+    { "from": "a4", "to": "a5" },
+    { "from": "a4", "to": "a6" },
+    { "from": "a4", "to": "a7" }
+  ]
+}

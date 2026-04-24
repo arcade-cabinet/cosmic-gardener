@@ -1,0 +1,27 @@
+{
+  "id": "serpens",
+  "name": "Serpens",
+  "difficulty": 5,
+  "requiredEnergy": 300,
+  "points": [
+    { "id": "s1", "x": 25, "y": 25 },
+    { "id": "s2", "x": 35, "y": 35 },
+    { "id": "s3", "x": 45, "y": 30 },
+    { "id": "s4", "x": 55, "y": 40 },
+    { "id": "s5", "x": 50, "y": 55 },
+    { "id": "s6", "x": 60, "y": 65 },
+    { "id": "s7", "x": 70, "y": 60 },
+    { "id": "s8", "x": 75, "y": 75 },
+    { "id": "s9", "x": 65, "y": 85 }
+  ],
+  "connections": [
+    { "from": "s1", "to": "s2" },
+    { "from": "s2", "to": "s3" },
+    { "from": "s3", "to": "s4" },
+    { "from": "s4", "to": "s5" },
+    { "from": "s5", "to": "s6" },
+    { "from": "s6", "to": "s7" },
+    { "from": "s7", "to": "s8" },
+    { "from": "s8", "to": "s9" }
+  ]
+}

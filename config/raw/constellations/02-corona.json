@@ -1,0 +1,22 @@
+{
+  "id": "corona",
+  "name": "Corona",
+  "difficulty": 2,
+  "requiredEnergy": 150,
+  "points": [
+    { "id": "c1", "x": 50, "y": 25 },
+    { "id": "c2", "x": 35, "y": 35 },
+    { "id": "c3", "x": 30, "y": 55 },
+    { "id": "c4", "x": 50, "y": 70 },
+    { "id": "c5", "x": 70, "y": 55 },
+    { "id": "c6", "x": 65, "y": 35 }
+  ],
+  "connections": [
+    { "from": "c1", "to": "c2" },
+    { "from": "c2", "to": "c3" },
+    { "from": "c3", "to": "c4" },
+    { "from": "c4", "to": "c5" },
+    { "from": "c5", "to": "c6" },
+    { "from": "c6", "to": "c1" }
+  ]
+}
