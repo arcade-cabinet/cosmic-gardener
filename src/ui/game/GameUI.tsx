@@ -103,6 +103,7 @@ export function GameUI({
           <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem" }}>
             <span style={HUD_LABEL}>Level</span>
             <span
+              data-testid="hud-stat-level"
               className="cg-display"
               style={{ fontSize: "1.65rem", fontWeight: 500, color: "var(--color-fg)" }}
             >
@@ -137,6 +138,7 @@ export function GameUI({
       </div>
 
       <motion.div
+        data-testid="hud-pattern-chip"
         style={{
           position: "absolute",
           top: useCompactStrip ? "5.85rem" : "5.25rem",
@@ -243,7 +245,7 @@ export function GameUI({
           transition={{ delay: 0.3 }}
         >
           <span style={HUD_LABEL}>Charge</span>
-          <div style={METER_TRACK}>
+          <div style={METER_TRACK} data-testid="hud-charge">
             <motion.div
               style={{
                 height: "100%",
@@ -267,7 +269,7 @@ export function GameUI({
           transition={{ delay: 0.4 }}
         >
           <span style={HUD_LABEL}>Warmth</span>
-          <div style={METER_TRACK}>
+          <div style={METER_TRACK} data-testid="hud-warmth">
             <motion.div
               style={{ height: "100%", borderRadius: "999px" }}
               animate={{
