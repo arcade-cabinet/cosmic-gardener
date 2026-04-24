@@ -39,9 +39,9 @@ describe("cosmic garden simulation", () => {
   });
 
   test("generates deterministic void zones without runtime randomness", () => {
-    expect(createDeterministicVoidZones(3)).toEqual(createDeterministicVoidZones(3));
-    expect(createDeterministicVoidZones(12)).toHaveLength(4);
-    expect(createDeterministicVoidZones(3)[0]).toMatchObject({
+    expect(createDeterministicVoidZones(42, 3)).toEqual(createDeterministicVoidZones(42, 3));
+    expect(createDeterministicVoidZones(42, 12)).toHaveLength(4);
+    expect(createDeterministicVoidZones(42, 3)[0]).toMatchObject({
       drainRate: 1.1,
       radius: expect.any(Number),
       x: expect.any(Number),

@@ -40,7 +40,7 @@ describe("constellation progress", () => {
   });
 
   test("previews the next constellation reward target", () => {
-    const preview = getNextConstellationPreview(1);
+    const preview = getNextConstellationPreview(42, 1);
 
     expect(preview).not.toBeNull();
     if (!preview) return;
@@ -52,7 +52,7 @@ describe("constellation progress", () => {
   });
 
   test("returns no preview after the final constellation", () => {
-    expect(getNextConstellationPreview(CONSTELLATIONS.length)).toBeNull();
+    expect(getNextConstellationPreview(42, CONSTELLATIONS.length)).toBeNull();
     expect(isGardenCompleteLevel(CONSTELLATIONS.length - 1)).toBe(false);
     expect(isGardenCompleteLevel(CONSTELLATIONS.length)).toBe(true);
   });

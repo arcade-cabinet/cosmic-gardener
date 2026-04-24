@@ -1,5 +1,6 @@
 import { COMPILED_CONSTELLATIONS } from "@config/compiled/content";
 import { createDeterministicVoidZones } from "./garden";
+import { createRng } from "../rng";
 
 export interface ConstellationPoint {
   x: number;
@@ -42,11 +43,26 @@ export interface VoidZone {
   drainRate: number;
 }
 
-export function generateVoidZones(level: number): VoidZone[] {
-  return createDeterministicVoidZones(level);
+export function generateVoidZones(seed: number, level: number): VoidZone[] {
+  return createDeterministicVoidZones(seed, level);
 }
 
-export function getConstellationForLevel(level: number): ConstellationPattern {
-  const index = Math.min(level - 1, CONSTELLATIONS.length - 1);
-  return CONSTELLATIONS[index];
+export function getConstellationSequence(seed: number): ConstellationPattern[] {
+  const rng = createRng(seed);
+  const pool = [...CONSTELLATIONS];
+  // Sort pool to ensure deterministic order before shuffling, just in case
+  pool.sort((a, b) => a.id.localeCompare(b.id));
+  
+  const seq: ConstellationPattern[] = [];
+  while (pool.length > 0) {
+    const idx = rng.int(0, pool.length - 1);
+    seq.push(pool.splice(idx, 1)[0]);
+  }
+  return seq;
+}
+
+export function getConstellationForLevel(seed: number, level: number): ConstellationPattern {
+  const seq = getConstellationSequence(seed);
+  const index = Math.min(level - 1, seq.length - 1);
+  return seq[index];
 }

@@ -1,5 +1,6 @@
 import type { ConstellationPattern, VoidZone } from "./patterns";
 import { createStarSeed, type StarSeed } from "./stars";
+import { createRng, hashSeed } from "../rng";
 
 /**
  * Starter garden + deterministic void-zone generation. Pure —
@@ -29,19 +30,16 @@ export function createStarterGarden(pattern: ConstellationPattern, level: number
   };
 }
 
-export function createDeterministicVoidZones(level: number): VoidZone[] {
+export function createDeterministicVoidZones(seed: number, level: number): VoidZone[] {
   const count = Math.min(level, 4);
+  const rng = createRng(hashSeed(seed, level, 0x12345));
 
-  return Array.from({ length: count }, (_, index) => ({
+  return Array.from({ length: count }, () => ({
     drainRate: round(0.5 + level * 0.2, 2),
-    radius: round(8 + normalizedHash(level, index, 41) * 6, 2),
-    x: round(18 + normalizedHash(level, index, 67) * 64, 2),
-    y: round(22 + normalizedHash(level + 3, index, 59) * 54, 2),
+    radius: round(8 + rng.range(0, 1) * 6, 2),
+    x: round(18 + rng.range(0, 1) * 64, 2),
+    y: round(22 + rng.range(0, 1) * 54, 2),
   }));
-}
-
-function normalizedHash(level: number, index: number, modulo: number): number {
-  return ((level * 31 + index * 47 + 17) % modulo) / modulo;
 }
 
 function round(value: number, precision = 2): number {

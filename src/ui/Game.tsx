@@ -26,6 +26,7 @@ import {
   resolveCosmicDrainRecovery,
   tuneVoidZonesForMode,
 } from "@/sim/session";
+import { codenameFromSeed, dailySeed, randomSeed } from "@/sim/rng";
 import { useEnergyRouting } from "@/hooks/useEnergyRouting";
 import { usePinballPhysics } from "@/hooks/usePinballPhysics";
 import { useAudio } from "@/audio/useAudio";
@@ -67,6 +68,7 @@ function RunResultEffect({
 
 type GameState =
   | "intro"
+  | "setup"
   | "tutorial"
   | "playing"
   | "paused"
@@ -83,6 +85,7 @@ interface CosmicRunSnapshot {
   gameState: GameState;
   level: number;
   recoveryBloomsUsed: number;
+  runSeed: number;
   score: number;
   sessionMode: SessionMode;
   starPointMatches: [string, string][];
@@ -255,6 +258,8 @@ export default function Game({ className }: { className?: string }) {
   const audio = useAudio();
   const [gameState, setGameState] = useState<GameState>("intro");
   const [sessionMode, setSessionMode] = useState<SessionMode>("standard");
+  const [runSeed, setRunSeed] = useState(42);
+  const [setupSeed, setSetupSeed] = useState(() => randomSeed());
   const [level, setLevel] = useState(1);
   const [constellationsCompleted, setConstellationsCompleted] = useState(0);
   const [voidZones, setVoidZones] = useState<VoidZoneType[]>([]);
@@ -447,8 +452,8 @@ export default function Game({ className }: { className?: string }) {
     onDrain: handleDrain,
   });
 
-  const currentPattern = getConstellationForLevel(level);
-  const nextPreview = getNextConstellationPreview(level);
+  const currentPattern = getConstellationForLevel(runSeed, level);
+  const nextPreview = getNextConstellationPreview(runSeed, level);
   const zenCue = getCosmicZenTransitionCue({
     constellationsCompleted,
     score,
@@ -521,8 +526,8 @@ export default function Game({ className }: { className?: string }) {
   ]);
 
   const loadLevel = useCallback(
-    (targetLevel: number) => {
-      const pattern = getConstellationForLevel(targetLevel);
+    (targetLevel: number, seed: number) => {
+      const pattern = getConstellationForLevel(seed, targetLevel);
       const starterGarden = createStarterGarden(pattern, targetLevel);
       seedStars(starterGarden.stars);
       setCompletedPoints(starterGarden.completedPoints);
@@ -535,9 +540,9 @@ export default function Game({ className }: { className?: string }) {
 
   useEffect(() => {
     if (gameState === "playing") {
-      setVoidZones(tuneVoidZonesForMode(generateVoidZones(level), sessionMode));
+      setVoidZones(tuneVoidZonesForMode(generateVoidZones(runSeed, level), sessionMode));
     }
-  }, [level, gameState, sessionMode]);
+  }, [level, gameState, sessionMode, runSeed]);
 
   const handleCanvasClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -691,7 +696,7 @@ export default function Game({ className }: { className?: string }) {
     [orbs.size, launchOrb]
   );
 
-  const startGame = (mode: SessionMode = sessionMode, savedSnapshot?: CosmicRunSnapshot | null) => {
+  const startGame = (mode: SessionMode = sessionMode, savedSnapshot?: CosmicRunSnapshot | null, seed: number = runSeed) => {
     // Resume audio from the user gesture that triggers the game start.
     // The browser only unlocks an AudioContext on a real user gesture,
     // and Begin-the-Journey is the earliest we can count on one.
@@ -699,8 +704,9 @@ export default function Game({ className }: { className?: string }) {
     const snapshot = savedSnapshot;
     if (snapshot && isCosmicSnapshot(snapshot)) {
       setSessionMode(mode);
+      setRunSeed(snapshot.runSeed ?? seed);
       resetGame();
-      loadLevel(snapshot.level);
+      loadLevel(snapshot.level, snapshot.runSeed ?? seed);
       setLevel(snapshot.level);
       setConstellationsCompleted(snapshot.constellationsCompleted);
       setCompletedPoints(new Set(snapshot.completedPoints));
@@ -723,6 +729,7 @@ export default function Game({ className }: { className?: string }) {
 
     const tuning = getCosmicModeTuning(mode);
     setSessionMode(mode);
+    setRunSeed(seed);
     resetGame();
     setLevel(1);
     setConstellationsCompleted(0);
@@ -751,6 +758,7 @@ export default function Game({ className }: { className?: string }) {
       gameState,
       level,
       recoveryBloomsUsed,
+      runSeed,
       score,
       sessionMode,
       starPointMatches: Array.from(starPointMatches.entries()),
@@ -759,7 +767,7 @@ export default function Game({ className }: { className?: string }) {
   });
 
   const startPlaying = () => {
-    loadLevel(1);
+    loadLevel(1, runSeed);
     setGameState("playing");
   };
 
@@ -773,7 +781,7 @@ export default function Game({ className }: { className?: string }) {
     const targetLevel = level + 1;
     const tuning = getCosmicModeTuning(sessionMode);
     setLevel(targetLevel);
-    loadLevel(targetLevel);
+    loadLevel(targetLevel, runSeed);
     setBallsRemaining((prev) => Math.min(prev + 1, tuning.maxBalls));
     setGameState("playing");
   };
@@ -1085,24 +1093,82 @@ export default function Game({ className }: { className?: string }) {
           >
             <StartScreen
               title="Cosmic Gardener"
-              subtitle="Keep the orb alive. Each star it strikes will glow; wake the pattern, and the constellation blooms itself."
+              subtitle="You are a Gardener of the Void. Your mission: plant star seeds to breathe life into dead space. Each seed phrase generates a unique sector of the universe."
               primaryAction={{
-                label: "Launch the Orb",
-                onClick: () => startGame(sessionMode),
+                label: "Initialize Nursery",
+                onClick: () => {
+                  setSetupSeed(randomSeed());
+                  setGameState("setup");
+                },
               }}
             >
-              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", justifyContent: "center" }}>
-                {(["cozy", "standard", "challenge"] as const).map((m) => (
-                  <OverlayButton
-                    key={m}
-                    variant={m === sessionMode ? "primary" : "ghost"}
-                    onClick={() => setSessionMode(m)}
-                  >
-                    {m}
-                  </OverlayButton>
-                ))}
-              </div>
+              {/* Mode picker removed from here to setup screen */}
             </StartScreen>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {gameState === "setup" && (
+          <motion.div
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md z-[100]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="relative max-w-lg w-full rounded-xl border border-cyan-200/25 bg-slate-950/80 px-8 py-10 shadow-2xl shadow-cyan-900/40 text-center"
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+            >
+              <h2 className="text-xl font-light text-cyan-200/80 uppercase tracking-widest mb-2">Nursery Configuration</h2>
+              <div className="my-8">
+                <div className="text-sm font-medium text-white/50 mb-3 uppercase tracking-wider">Sector Designation</div>
+                <div className="text-3xl font-black text-amber-300 drop-shadow-[0_0_12px_rgba(251,191,36,0.6)]">
+                  {codenameFromSeed(setupSeed)}
+                </div>
+                <div className="mt-6 flex justify-center gap-4">
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-full border border-white/20 bg-white/5 text-white/80 hover:bg-white/15 hover:text-white transition-colors text-sm uppercase tracking-wider"
+                    onClick={() => setSetupSeed(randomSeed())}
+                  >
+                    Reroll Seed
+                  </button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors text-sm uppercase tracking-wider"
+                    onClick={() => setSetupSeed(dailySeed())}
+                  >
+                    Daily Seed
+                  </button>
+                </div>
+              </div>
+
+              <div className="mb-10">
+                <div className="text-sm font-medium text-white/50 mb-4 uppercase tracking-wider">Cultivation Mode</div>
+                <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", justifyContent: "center" }}>
+                  {(["cozy", "standard", "challenge"] as const).map((m) => (
+                    <OverlayButton
+                      key={m}
+                      variant={m === sessionMode ? "primary" : "ghost"}
+                      onClick={() => setSessionMode(m)}
+                    >
+                      {m}
+                    </OverlayButton>
+                  ))}
+                </div>
+              </div>
+
+              <motion.button
+                className="w-full py-4 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(45,212,191,0.4)] hover:shadow-[0_0_30px_rgba(45,212,191,0.6)] transition-shadow"
+                onClick={() => startGame(sessionMode, null, setupSeed)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Begin Mission
+              </motion.button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1248,7 +1314,7 @@ export default function Game({ className }: { className?: string }) {
               <p className="text-white/60 mb-2">Final Score</p>
               <motion.button
                 className="px-8 py-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors"
-                onClick={() => startGame()}
+                onClick={() => setGameState("setup")}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
