@@ -55,12 +55,18 @@ Each is its own PR so reviewers can follow the chain end-to-end.
       pattern / Rest when it hums", title uses Fraunces instead of
       the stale bs-display class. Codename + procedural blurb are
       the follow-up once codename is wired into the landing card.
-- [ ] **PR E — Audio stack.** Tone.js ambient drone with per-stage
-      chord movement (open fifth → sus4 → minor 9th resolution on
-      constellation hum). Tone-synthesized SFX for flipper contact,
-      seed awaken, constellation complete, cold encroach. Master
-      mute toggle in HUD (bottom-left), persists to localStorage,
-      honors `prefers-reduced-motion`.
+- [x] **PR E — Audio stack (foundation).** `src/audio/engine.ts`
+      ships a Tone.js ambient pad (open-fifth triad + detuned
+      shimmering third) routed through reverb + low-pass, plus
+      per-event SFX synthesizers (`playSeedAwaken`,
+      `playFlipperContact`, `playConstellationHum`,
+      `playColdEncroach`). `src/audio/useAudio.tsx` is the React
+      bridge: `<AudioProvider>` at the root, `useAudio()` for
+      components. Master mute toggle lives in the bottom-left of the
+      viewport, persists to `localStorage`, honors
+      `prefers-reduced-motion`. The constellation-hum SFX is wired
+      into the connection-complete event; the remaining SFX wire in
+      as their event paths are touched.
 - [ ] **PR F — Content pipeline.** Constellations + star-seed
       patterns authored in `config/raw/*.json` and compiled via
       `scripts/compile-content.mjs` (Zod-validated). Runs as
