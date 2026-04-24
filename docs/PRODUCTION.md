@@ -86,12 +86,19 @@ Each is its own PR so reviewers can follow the chain end-to-end.
       `prefers-reduced-motion`. The constellation-hum SFX is wired
       into the connection-complete event; the remaining SFX wire in
       as their event paths are touched.
-- [ ] **PR F — Content pipeline.** Constellations + star-seed
-      patterns authored in `config/raw/*.json` and compiled via
-      `scripts/compile-content.mjs` (Zod-validated). Runs as
-      `predev` / `prebuild` / `pretypecheck` / `pretest:*` so content
-      edits are live without touching TypeScript. Output goes to
-      `config/compiled/content.ts` (gitignored).
+- [x] **PR F — Content pipeline.** Constellations authored as
+      one-per-file in `config/raw/constellations/*.json` and
+      compiled via `scripts/compile-content.mjs` (Zod-validated
+      with a cross-file edge-integrity check: every connection's
+      `from`/`to` must reference a point inside the same
+      constellation). Pipeline runs as `predev` / `prebuild` /
+      `pretypecheck` / `pretest:{node,dom,browser}`. Output lands
+      at `config/compiled/content.ts` (gitignored). `@config/*`
+      path alias wired into `tsconfig.app.json` + all three vitest
+      configs + `vite.config.ts`. Star-seed patterns are still
+      derived (via `createStarterGarden` from the pattern's
+      `points`); if distinct star-seed authoring is ever needed
+      it's a follow-up on the same pipeline.
 - [ ] **PR G — Identity icons.** Favicon, apple-touch, OG image with
       the cosmic-gardener visual identity (star-pattern + orb, deep
       space + warm nebula accent palette). Android icon pack at all

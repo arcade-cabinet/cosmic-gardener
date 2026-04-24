@@ -1,0 +1,25 @@
+{
+  "id": "cygnus",
+  "name": "Cygnus",
+  "difficulty": 4,
+  "requiredEnergy": 250,
+  "points": [
+    { "id": "cy1", "x": 50, "y": 15 },
+    { "id": "cy2", "x": 50, "y": 35 },
+    { "id": "cy3", "x": 30, "y": 45 },
+    { "id": "cy4", "x": 70, "y": 45 },
+    { "id": "cy5", "x": 50, "y": 55 },
+    { "id": "cy6", "x": 50, "y": 75 },
+    { "id": "cy7", "x": 35, "y": 85 },
+    { "id": "cy8", "x": 65, "y": 85 }
+  ],
+  "connections": [
+    { "from": "cy1", "to": "cy2" },
+    { "from": "cy2", "to": "cy3" },
+    { "from": "cy2", "to": "cy4" },
+    { "from": "cy2", "to": "cy5" },
+    { "from": "cy5", "to": "cy6" },
+    { "from": "cy6", "to": "cy7" },
+    { "from": "cy6", "to": "cy8" }
+  ]
+}

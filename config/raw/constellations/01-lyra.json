@@ -1,0 +1,20 @@
+{
+  "id": "lyra",
+  "name": "Lyra",
+  "difficulty": 1,
+  "requiredEnergy": 100,
+  "points": [
+    { "id": "l1", "x": 50, "y": 30 },
+    { "id": "l2", "x": 40, "y": 45 },
+    { "id": "l3", "x": 60, "y": 45 },
+    { "id": "l4", "x": 35, "y": 60 },
+    { "id": "l5", "x": 65, "y": 60 }
+  ],
+  "connections": [
+    { "from": "l1", "to": "l2" },
+    { "from": "l1", "to": "l3" },
+    { "from": "l2", "to": "l4" },
+    { "from": "l3", "to": "l5" },
+    { "from": "l2", "to": "l3" }
+  ]
+}
