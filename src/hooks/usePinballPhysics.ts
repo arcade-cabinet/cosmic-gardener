@@ -5,9 +5,9 @@ import {
   createPinballOrb,
   type PinballOrb,
   resolveOrbStarCollision,
-} from "./cosmicGardenSimulation";
+} from "@/sim/orb";
 
-export type { PinballOrb } from "./cosmicGardenSimulation";
+export type { PinballOrb } from "@/sim/orb";
 
 interface UsePinballPhysicsProps {
   stars: Map<string, { id: string; x: number; y: number; energy: number; growthStage: number }>;

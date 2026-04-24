@@ -1,5 +1,5 @@
 import { normalizeSessionMode, type SessionMode } from "@/lib/sessionMode";
-import type { VoidZone } from "./constellations";
+import type { VoidZone } from "@/sim/constellation/patterns";
 
 export interface CosmicModeTuning {
   maxBalls: number;

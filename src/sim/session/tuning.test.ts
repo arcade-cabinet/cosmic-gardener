@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
-import { generateVoidZones } from "./constellations";
+import { generateVoidZones } from "@/sim/constellation/patterns";
 import {
   getCosmicModeTuning,
   getCosmicSessionTargetMinutes,
   resolveCosmicDrainRecovery,
   tuneVoidZonesForMode,
-} from "./cosmicSession";
+} from "./tuning";
 
 describe("cosmic session tuning", () => {
   test("keeps standard play in the couch-session range with opt-in pressure", () => {

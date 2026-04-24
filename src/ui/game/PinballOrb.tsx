@@ -1,4 +1,4 @@
-import type { PinballOrb as PinballOrbType } from "@/engine/usePinballPhysics";
+import type { PinballOrb as PinballOrbType } from "@/hooks/usePinballPhysics";
 import { motion } from "framer-motion";
 
 interface PinballOrbProps {

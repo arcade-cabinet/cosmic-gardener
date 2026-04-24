@@ -10,9 +10,9 @@ import {
   type EnergyStream,
   MAX_COSMIC_COLD,
   type StarSeed,
-} from "./cosmicGardenSimulation";
+} from "@/sim/constellation";
 
-export type { EnergyStream, StarSeed } from "./cosmicGardenSimulation";
+export type { EnergyStream, StarSeed } from "@/sim/constellation";
 
 interface UseEnergyRoutingProps {
   onEnergyDepleted?: () => void;

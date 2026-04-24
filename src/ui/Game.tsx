@@ -4,36 +4,30 @@ import { useRunSnapshotAutosave } from "@/hooks/useRunSnapshotAutosave";
 import { recordBestScore, recordRunResult } from "@/hooks/runtimeResult";
 import type { SessionMode } from "@/lib/sessionMode";
 import {
+  calculateComboMultiplier,
+  calculateResonanceBloomBonus,
+  calculateStarHitScore,
+  CONSTELLATIONS,
+  createStarterGarden,
   findMatchedPointId,
+  generateVoidZones,
+  getConstellationForLevel,
+  getCosmicLowerBoardLayout,
   getCosmicZenTransitionCue,
   getNextConstellationPreview,
   getPatternConnectionKey,
   isConstellationComplete,
   isGardenCompleteLevel,
-} from "@/engine/constellationProgress";
-import {
-  CONSTELLATIONS,
-  generateVoidZones,
-  getConstellationForLevel,
-  type VoidZone as VoidZoneType,
-} from "@/engine/constellations";
-import {
   type CosmicLowerBoardLayout,
-  getCosmicLowerBoardLayout,
-} from "@/engine/cosmicBoardLayout";
-import {
-  calculateComboMultiplier,
-  calculateResonanceBloomBonus,
-  calculateStarHitScore,
-  createStarterGarden,
-} from "@/engine/cosmicGardenSimulation";
+  type VoidZone as VoidZoneType,
+} from "@/sim/constellation";
 import {
   getCosmicModeTuning,
   resolveCosmicDrainRecovery,
   tuneVoidZonesForMode,
-} from "@/engine/cosmicSession";
-import { useEnergyRouting } from "@/engine/useEnergyRouting";
-import { usePinballPhysics } from "@/engine/usePinballPhysics";
+} from "@/sim/session";
+import { useEnergyRouting } from "@/hooks/useEnergyRouting";
+import { usePinballPhysics } from "@/hooks/usePinballPhysics";
 import { useAudio } from "@/audio/useAudio";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";

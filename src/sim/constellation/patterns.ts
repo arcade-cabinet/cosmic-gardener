@@ -1,4 +1,4 @@
-import { createDeterministicVoidZones } from "./cosmicGardenSimulation";
+import { createDeterministicVoidZones } from "./garden";
 
 export interface ConstellationPoint {
   x: number;

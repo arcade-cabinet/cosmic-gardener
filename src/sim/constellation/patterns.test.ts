@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { CONSTELLATIONS, generateVoidZones, getConstellationForLevel } from "./constellations";
+import { CONSTELLATIONS, generateVoidZones, getConstellationForLevel } from "./patterns";
 
 describe("constellation selection", () => {
   test("returns the first pattern for level one and clamps beyond the catalog", () => {

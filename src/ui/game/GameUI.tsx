@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { CosmicLowerBoardLayout } from "@/engine/cosmicBoardLayout";
+import type { CosmicLowerBoardLayout } from "@/sim/constellation";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface GameUIProps {
