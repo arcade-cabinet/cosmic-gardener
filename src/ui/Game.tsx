@@ -1,4 +1,4 @@
-import { GameViewport, OverlayButton, StartScreen } from "@/ui/shell";
+import { GameViewport, MuteToggle, OverlayButton, StartScreen } from "@/ui/shell";
 import { useResponsive } from "@/hooks/useResponsive";
 import { useRunSnapshotAutosave } from "@/hooks/useRunSnapshotAutosave";
 import { recordBestScore, recordRunResult } from "@/hooks/runtimeResult";
@@ -34,6 +34,7 @@ import {
 } from "@/engine/cosmicSession";
 import { useEnergyRouting } from "@/engine/useEnergyRouting";
 import { usePinballPhysics } from "@/engine/usePinballPhysics";
+import { useAudio } from "@/audio/useAudio";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -257,6 +258,7 @@ function ZenTransitionOverlay({
 export default function Game({ className }: { className?: string }) {
   const viewport = useResponsive();
   const lowerBoardLayout = getCosmicLowerBoardLayout(viewport);
+  const audio = useAudio();
   const [gameState, setGameState] = useState<GameState>("intro");
   const [sessionMode, setSessionMode] = useState<SessionMode>("standard");
   const [level, setLevel] = useState(1);
@@ -538,6 +540,7 @@ export default function Game({ className }: { className?: string }) {
           setScore((prev) => prev + points);
           setResonanceBloom({ connectionCount: nextConnectionCount, points });
           setTimeout(() => setResonanceBloom(null), 1200);
+          audio.playConstellationHum();
         }
       }
 
@@ -555,6 +558,7 @@ export default function Game({ className }: { className?: string }) {
       starPointMatches,
       completedConnections,
       comboMultiplier,
+      audio.playConstellationHum,
     ]
   );
 
@@ -569,6 +573,10 @@ export default function Game({ className }: { className?: string }) {
   );
 
   const startGame = (mode: SessionMode = sessionMode, savedSnapshot?: CosmicRunSnapshot | null) => {
+    // Resume audio from the user gesture that triggers the game start.
+    // The browser only unlocks an AudioContext on a real user gesture,
+    // and Begin-the-Journey is the earliest we can count on one.
+    void audio.resume();
     const snapshot = savedSnapshot;
     if (snapshot && isCosmicSnapshot(snapshot)) {
       setSessionMode(mode);
@@ -1127,6 +1135,7 @@ export default function Game({ className }: { className?: string }) {
           </motion.div>
         )}
       </AnimatePresence>
+      <MuteToggle />
     </GameViewport>
   );
 }
