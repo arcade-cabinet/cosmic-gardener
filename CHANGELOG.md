@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1](https://github.com/arcade-cabinet/cosmic-gardener/compare/v0.4.0...v0.4.1) (2026-04-24)
+
+
+### Refactoring
+
+* **cg:** final typecheck fixes ([#45](https://github.com/arcade-cabinet/cosmic-gardener/issues/45)) ([341d592](https://github.com/arcade-cabinet/cosmic-gardener/commit/341d592e4e6b0e4042cfd03f372f24b7b34b6443))
+* **cg:** strip remaining Pinball references ([#43](https://github.com/arcade-cabinet/cosmic-gardener/issues/43)) ([87d63fd](https://github.com/arcade-cabinet/cosmic-gardener/commit/87d63fdcef64bebe82d49e847f9f7941d77a7e41))
+
 ## [0.4.0](https://github.com/arcade-cabinet/cosmic-gardener/compare/v0.3.0...v0.4.0) (2026-04-24)
 
 
