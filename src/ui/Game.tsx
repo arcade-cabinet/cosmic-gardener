@@ -1016,9 +1016,9 @@ export default function Game({ className }: { className?: string }) {
           >
             <StartScreen
               title="Cosmic Gardener"
-              subtitle="Plant star seeds, keep the orb alive, and bloom constellations across a living pinball sky."
+              subtitle="Keep the orb alive. Each star it strikes will glow; wake the pattern, and the constellation blooms itself."
               primaryAction={{
-                label: "Begin the Journey",
+                label: "Launch the Orb",
                 onClick: () => startGame(sessionMode),
               }}
             >
@@ -1051,7 +1051,7 @@ export default function Game({ className }: { className?: string }) {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
             >
-              <h2 className="text-3xl font-light text-white mb-8">The Amazing Journey</h2>
+              <h2 className="text-3xl font-light text-white mb-8">How a constellation blooms</h2>
 
               <div className="space-y-6 text-left mb-10">
                 <div className="flex items-start gap-4">
@@ -1059,9 +1059,9 @@ export default function Game({ className }: { className?: string }) {
                     <span className="text-amber-400">1</span>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">Wake the Nursery</h3>
+                    <h3 className="text-white font-medium mb-1">Tap a side to flip</h3>
                     <p className="text-white/60 text-sm">
-                      Each constellation begins with young bumper stars waiting for energy.
+                      Hold the left or right half of the screen to fire the nearest flipper.
                     </p>
                   </div>
                 </div>
@@ -1071,9 +1071,9 @@ export default function Game({ className }: { className?: string }) {
                     <span className="text-pink-400">2</span>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">Keep the Orb Alive</h3>
+                    <h3 className="text-white font-medium mb-1">Charge the stars</h3>
                     <p className="text-white/60 text-sm">
-                      Bounce the orb through the nursery lanes before cosmic cold overtakes them.
+                      Every hit adds light to a star. Fully-charged stars glow golden.
                     </p>
                   </div>
                 </div>
@@ -1083,9 +1083,9 @@ export default function Game({ className }: { className?: string }) {
                     <span className="text-purple-400">3</span>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">Grow Constellations</h3>
+                    <h3 className="text-white font-medium mb-1">Pairs bloom the pattern</h3>
                     <p className="text-white/60 text-sm">
-                      Route charged stars into the pattern and cultivate the living sky.
+                      When two neighbouring stars are both full, their edge lights up — no aim needed.
                     </p>
                   </div>
                 </div>
@@ -1097,7 +1097,7 @@ export default function Game({ className }: { className?: string }) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Play Ball
+                Launch the orb
               </motion.button>
             </motion.div>
           </motion.div>
