@@ -396,6 +396,66 @@ export default function Game({ className }: { className?: string }) {
     totalConstellations: CONSTELLATIONS.length,
   });
 
+  // Auto-connect constellation points whose both endpoints have
+  // reached full growth (growthStage === 3). This unifies the two
+  // previously-separate modes of play: pinball hits charge stars,
+  // and the constellation blooms itself as a consequence. The
+  // player's attention stays on keeping the orb alive. Manual
+  // drag-to-connect still works for players who want direct
+  // control.
+  useEffect(() => {
+    if (gameState !== "playing" && gameState !== "tutorial" && gameState !== "zenMode") return;
+    if (!currentPattern) return;
+
+    // Build a reverse lookup: pointId -> starId (the star that the
+    // player planted at that point, if any).
+    const starByPoint = new Map<string, string>();
+    for (const [starId, pointId] of starPointMatches.entries()) {
+      starByPoint.set(pointId, starId);
+    }
+
+    for (const edge of currentPattern.connections) {
+      const connectionKey = getPatternConnectionKey(
+        currentPattern,
+        starPointMatches,
+        starByPoint.get(edge.from) ?? "",
+        starByPoint.get(edge.to) ?? "",
+      );
+      if (!connectionKey || completedConnections.has(connectionKey)) continue;
+
+      const fromStarId = starByPoint.get(edge.from);
+      const toStarId = starByPoint.get(edge.to);
+      if (!fromStarId || !toStarId) continue;
+      const fromStar = stars.get(fromStarId);
+      const toStar = stars.get(toStarId);
+      if (!fromStar || !toStar) continue;
+
+      // Both endpoints must be at full growth for the constellation
+      // to auto-bloom this edge.
+      if (fromStar.growthStage < 3 || toStar.growthStage < 3) continue;
+
+      createStream(fromStarId, toStarId);
+      const nextConnectionCount = completedConnections.size + 1;
+      const points = calculateResonanceBloomBonus(nextConnectionCount, comboMultiplier);
+      setCompletedConnections((prev) => new Set([...prev, connectionKey]));
+      setScore((prev) => prev + points);
+      setResonanceBloom({ connectionCount: nextConnectionCount, points });
+      setTimeout(() => setResonanceBloom(null), 1200);
+      audio.playConstellationHum();
+      break; // Award one connection per render pass so the bloom
+              // animations stagger instead of all firing at once.
+    }
+  }, [
+    gameState,
+    stars,
+    currentPattern,
+    starPointMatches,
+    completedConnections,
+    comboMultiplier,
+    createStream,
+    audio.playConstellationHum,
+  ]);
+
   const loadLevel = useCallback(
     (targetLevel: number) => {
       const pattern = getConstellationForLevel(targetLevel);
